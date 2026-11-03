@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { format } from "date-fns";
 import { CheckCircle2, HeartPulse, SearchX, WifiOff } from "lucide-react";
-import { useGetCertificate, getGetCertificateQueryKey } from "@workspace/api-client-react";
+import { useGetCertificate, getGetCertificateQueryKey } from "../api/index.js";
 import { Button } from "../components/ui/button.jsx";
 import { Skeleton } from "../components/ui/skeleton.jsx";
 import { isNotFoundError, safeLearnerName } from "../lib/certificateVerification.js";

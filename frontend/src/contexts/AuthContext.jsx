@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "@workspace/api-client-react";
+import { supabase } from "../api/index.js";
 import { queryClient } from "../lib/queryClient.js";
 const AuthContext = createContext(null);
 export function AuthProvider({ children }) {

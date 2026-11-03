@@ -5,7 +5,7 @@ import { Edit, Trash2, ChevronDown, ChevronRight, BookOpen, FileText, Video } fr
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useListCourses, useCreateCourse, useUpdateCourse, useDeleteCourse, useGetCourse, useCreateModule, useUpdateModule, useDeleteModule, useCreateLesson, useUpdateLesson, getGetCourseQueryKey, useDeleteLesson, } from "@workspace/api-client-react";
+import { useListCourses, useCreateCourse, useUpdateCourse, useDeleteCourse, useGetCourse, useCreateModule, useUpdateModule, useDeleteModule, useCreateLesson, useUpdateLesson, getGetCourseQueryKey, useDeleteLesson, } from "../api/index.js";
 import { AppLayout } from "../components/layout/AppLayout.jsx";
 import { Button } from "../components/ui/button.jsx";
 import { Input } from "../components/ui/input.jsx";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRetakeCourse, useRetakeCourseAssessment, getGetCourseAssessmentQueryKey } from "@workspace/api-client-react";
+import { useRetakeCourse, useRetakeCourseAssessment, getGetCourseAssessmentQueryKey } from "../api/index.js";
 import { Button } from "./ui/button.jsx";
 import { useToast } from "../hooks/use-toast.js";
 import { errorMessage, refreshLearning } from "../lib/learning.js";

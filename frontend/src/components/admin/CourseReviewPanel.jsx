@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle2, ShieldCheck } from "lucide-react";
-import { useGetCourseReviews, useSaveCourseReview, usePublishReviewedCourse, getGetCourseReviewsQueryKey, } from "@workspace/api-client-react";
+import { useGetCourseReviews, useSaveCourseReview, usePublishReviewedCourse, getGetCourseReviewsQueryKey, } from "../../api/index.js";
 import { useConfirmation } from "../../contexts/ConfirmationContext.jsx";
 import { Button } from "../ui/button.jsx";
 import { Input } from "../ui/input.jsx";

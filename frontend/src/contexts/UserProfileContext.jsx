@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { useAuth } from "./AuthContext.jsx";
-import { useGetMyProfile, getGetMyProfileQueryKey } from "@workspace/api-client-react";
+import { useGetMyProfile, getGetMyProfileQueryKey } from "../api/index.js";
 const UserProfileContext = createContext({
     role: "learner",
     isManager: false,

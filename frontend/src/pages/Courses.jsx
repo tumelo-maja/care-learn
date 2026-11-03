@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, BookOpen } from "lucide-react";
-import { useListCourses } from "@workspace/api-client-react";
+import { useListCourses } from "../api/index.js";
 import { AppLayout } from "../components/layout/AppLayout.jsx";
 import { CourseCard } from "../components/course/CourseCard.jsx";
 import { Input } from "../components/ui/input.jsx";

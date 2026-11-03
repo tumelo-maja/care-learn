@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useUpdateLesson, getGetCourseQueryKey, } from "@workspace/api-client-react";
+import { useUpdateLesson, getGetCourseQueryKey, } from "../../api/index.js";
 import { Button } from "../ui/button.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { Input } from "../ui/input.jsx";

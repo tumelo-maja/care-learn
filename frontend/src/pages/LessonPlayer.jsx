@@ -3,7 +3,7 @@ import { countryLabel } from "../lib/trainingCountry.js";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Menu, PlayCircle } from "lucide-react";
 import { LessonContent, LessonVideo } from "../components/lesson/LessonContent.jsx";
-import { useGetCourse, useMarkLessonComplete, useGetMyEnrolments, getGetCourseQueryKey, getGetMyEnrolmentsQueryKey, } from "@workspace/api-client-react";
+import { useGetCourse, useMarkLessonComplete, useGetMyEnrolments, getGetCourseQueryKey, getGetMyEnrolmentsQueryKey, } from "../api/index.js";
 import { Button } from "../components/ui/button.jsx";
 import { ScrollArea } from "../components/ui/scroll-area.jsx";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../components/ui/sheet.jsx";

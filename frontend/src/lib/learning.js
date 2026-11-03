@@ -1,4 +1,4 @@
-import { getGetMyEnrolmentsQueryKey, getGetCourseAssessmentQueryKey, getGetMyCertificatesQueryKey, } from "@workspace/api-client-react";
+import { getGetMyEnrolmentsQueryKey, getGetCourseAssessmentQueryKey, getGetMyCertificatesQueryKey, } from "../api/index.js";
 /** Copies modules/lessons sorted by orderIndex without mutating cached data. */
 export function orderModules(course) {
     return [...course.modules]

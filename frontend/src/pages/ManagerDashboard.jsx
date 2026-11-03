@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { useGetMyTeam, useGetTeamCandidates, useInviteTeamMember, useRemoveTeamMember } from "@workspace/api-client-react";
+import { useGetMyTeam, useGetTeamCandidates, useInviteTeamMember, useRemoveTeamMember } from "../api/index.js";
 import { AppLayout } from "../components/layout/AppLayout.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.jsx";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";

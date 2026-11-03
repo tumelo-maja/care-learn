@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Award, Loader2 } from "lucide-react";
-import { useGetCourse, getGetCourseQueryKey, useGetCourseAssessment, getGetCourseAssessmentQueryKey, useStartCourseAssessment, useSubmitCourseAssessment, useCompleteCourse, } from "@workspace/api-client-react";
+import { useGetCourse, getGetCourseQueryKey, useGetCourseAssessment, getGetCourseAssessmentQueryKey, useStartCourseAssessment, useSubmitCourseAssessment, useCompleteCourse, } from "../api/index.js";
 import { AppLayout } from "../components/layout/AppLayout.jsx";
 import { Button } from "../components/ui/button.jsx";
 import { Badge } from "../components/ui/badge.jsx";

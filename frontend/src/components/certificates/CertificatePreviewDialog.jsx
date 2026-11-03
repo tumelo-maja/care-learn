@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle } from "lucide-react";
-import { useGetCertificate, getGetCertificateQueryKey } from "@workspace/api-client-react";
+import { useGetCertificate, getGetCertificateQueryKey } from "../../api/index.js";
 import { Button } from "../ui/button.jsx";
 import { Skeleton } from "../ui/skeleton.jsx";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../ui/dialog.jsx";

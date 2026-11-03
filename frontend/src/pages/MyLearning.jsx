@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { format } from "date-fns";
 import { BookOpen, CheckCircle } from "lucide-react";
-import { useGetMyEnrolments } from "@workspace/api-client-react";
+import { useGetMyEnrolments } from "../api/index.js";
 import { AppLayout } from "../components/layout/AppLayout.jsx";
 import { Button } from "../components/ui/button.jsx";
 import { Card, CardContent, CardFooter, CardHeader } from "../components/ui/card.jsx";

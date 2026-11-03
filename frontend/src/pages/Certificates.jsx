@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 import { formatOnlineAwardDate } from "../lib/certificateTemplate.js";
 import { Award, ShieldCheck } from "lucide-react";
-import { useGetMyCertificates, getGetMyCertificatesQueryKey } from "@workspace/api-client-react";
+import { useGetMyCertificates, getGetMyCertificatesQueryKey } from "../api/index.js";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { AppLayout } from "../components/layout/AppLayout.jsx";
 import { Button } from "../components/ui/button.jsx";

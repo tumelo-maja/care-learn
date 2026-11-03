@@ -3,7 +3,7 @@ import { TRAINING_COUNTRIES, countryLabel } from "../lib/trainingCountry.js";
 import { useParams, Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, PlayCircle, CheckCircle2, AlertCircle } from "lucide-react";
-import { useGetCourse, useEnrolInCourse, useGetMyEnrolments, getGetCourseQueryKey, getGetMyEnrolmentsQueryKey, useGetCourseAssessment, getGetCourseAssessmentQueryKey, useCompleteCourse } from "@workspace/api-client-react";
+import { useGetCourse, useEnrolInCourse, useGetMyEnrolments, getGetCourseQueryKey, getGetMyEnrolmentsQueryKey, useGetCourseAssessment, getGetCourseAssessmentQueryKey, useCompleteCourse } from "../api/index.js";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { AppLayout } from "../components/layout/AppLayout.jsx";
 import { Button } from "../components/ui/button.jsx";

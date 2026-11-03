@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { supabase } from "@workspace/api-client-react";
+import { supabase } from "../../api/index.js";
 import { queryClient } from "../../lib/queryClient.js";
 import { AuthProvider } from "../../contexts/AuthContext.jsx";
 import { Button } from "../ui/button.jsx";

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useParams, Link } from "wouter";
 import { AlertCircle, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileText, Loader2, Menu, PlayCircle, XCircle } from "lucide-react";
-import { useGetAdminCoursePreview, getGetAdminCoursePreviewQueryKey, useStartAdminPreviewAssessment, useSubmitAdminPreviewAssessment, } from "@workspace/api-client-react";
+import { useGetAdminCoursePreview, getGetAdminCoursePreviewQueryKey, useStartAdminPreviewAssessment, useSubmitAdminPreviewAssessment, } from "../api/index.js";
 import { LessonContent, LessonVideo } from "../components/lesson/LessonContent.jsx";
 import { isHbc001Prototype } from "../lib/lessonPresentation.js";
 import { QuestionList } from "../components/assessment/QuestionList.jsx";
