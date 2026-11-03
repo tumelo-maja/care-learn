@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth, useUser, useAccount } from "../../contexts/AuthContext.jsx";
 import { useUserProfile } from "../../contexts/UserProfileContext.jsx";
 import { Button } from "../ui/button.jsx";
-import { HeartPulse, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "../ui/dropdown-menu.jsx";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "../ui/sheet.jsx";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar.jsx";
@@ -27,12 +27,7 @@ export function Navbar() {
       <div className="container mx-auto px-6 sm:px-8 lg:px-12 min-h-20 py-4 flex items-center justify-between gap-6">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <div className="bg-primary p-1.5 rounded-xl">
-              <HeartPulse className="h-5 w-5 text-primary-foreground"/>
-            </div>
-            <span className="font-serif font-semibold text-xl tracking-tight text-foreground">
-              Care Learn
-            </span>
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Care Learn" className="h-10 sm:h-12 w-auto max-w-[180px] object-contain" />
           </Link>
 
           <nav className="hidden md:flex gap-6">
@@ -100,8 +95,7 @@ export function Navbar() {
               </SheetDescription>
               <div className="flex flex-col gap-6 py-6">
                 <Link href="/" className="flex items-center gap-2">
-                  <HeartPulse className="h-6 w-6 text-primary"/>
-                  <span className="font-serif font-bold text-xl">Care Learn</span>
+                  <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Care Learn" className="h-12 w-auto max-w-[180px] object-contain" />
                 </Link>
                 <nav className="flex flex-col gap-2">
                   {navLinks.filter(l => l.show).map((link) => (<Link key={link.href} href={link.href} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${location.startsWith(link.href)

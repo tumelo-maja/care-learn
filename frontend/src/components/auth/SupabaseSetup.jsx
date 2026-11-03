@@ -64,7 +64,7 @@ function AuthForm({ mode }) {
   }
   return <div className="min-h-screen flex items-center justify-center bg-background p-4 py-12">
     <div className="w-full max-w-md rounded-2xl border bg-white p-7 shadow-sm">
-      <Link href="/"><img src={`${basePath}/logo.svg`} alt="Care Learn" className="h-12 mx-auto mb-7" /></Link>
+      <Link href="/"><img src={`${basePath}/logo.png`} alt="Care Learn" className="h-12 w-auto max-w-full object-contain mx-auto mb-7" /></Link>
       <h1 className="text-2xl font-serif font-bold text-center mb-2">{title}</h1>
       <p className="text-sm text-muted-foreground text-center mb-7">{signup ? "Free training for careworkers. Register with your email and password." : "Continue your Care Learn training."}</p>
       <form onSubmit={submit} className="space-y-4">
