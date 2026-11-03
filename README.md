@@ -24,21 +24,20 @@ This runs the Care Learn web application on your PC. It still needs an internet 
 
 Install **Node.js 24 LTS**, which includes npm. Open **Windows Command Prompt (CMD)**, change into the downloaded project folder (the folder containing this README), and check:
 
-```bat
+```
 node --version
 npm --version
 ```
 
 ### 2. Install directly in the existing project
 
-No duplicate application folder or preparation script is needed. From the repository root:
+No duplicate application folder or preparation script is needed. Open CMD in the existing app folder containing `package.json`, `index.html` and `src` (normally `artifacts\care-learn` in this repository). Then run:
 
-```bat
+```
 npm i
-cd artifacts\care-learn
 ```
 
-The repository registers the existing Care Learn app and shared API client as npm workspaces. npm installs their dependencies and links the shared client automatically. The app's package versions are npm-compatible; React and React DOM use the same exact version. Replit's existing pnpm workflows remain supported.
+The existing **`artifacts/care-learn` app folder can now run on its own**, including its own `src/api` client, public assets, package manifest, Vite configuration and compiler configuration. Copy the whole app folder, not only selected `.jsx` files. It does not need a sibling `lib` directory, the repository's root compiler configuration, or private workspace package linking. React and React DOM use the same exact version. The original repository and its pnpm workflows remain supported.
 
 Use npm on your PC and pnpm in Replit; do not alternate package managers over the same `node_modules` directory. Keep your local `package-lock.json` for repeatable npm installs.
 
@@ -46,7 +45,7 @@ Use npm on your PC and pnpm in Replit; do not alternate package managers over th
 
 In the existing `artifacts\care-learn` folder:
 
-```bat
+```
 copy .env.example .env.local
 notepad .env.local
 ```
@@ -55,8 +54,10 @@ Fill in the **project URL** and **public publishable key** for the Supabase proj
 
 ```dotenv
 VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLIC_PUBLISHABLE_KEY
+VITE_SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
 ```
+
+`VITE_SUPABASE_ANON_KEY` accepts your Supabase public anon/publishable key. The older `VITE_SUPABASE_PUBLISHABLE_KEY` name is also supported for compatibility; if both are set, `VITE_SUPABASE_ANON_KEY` takes precedence. Restart the development server after changing `.env` or `.env.local`.
 
 Never put a database password, database connection string, service-role key or secret API key into `VITE_` variables: these values are bundled into browser code. Do not commit `.env.local`.
 
@@ -66,7 +67,7 @@ For email confirmation and password-reset links, add `http://localhost:5173/**` 
 
 ### 4. Start the app
 
-```bat
+```
 npm run dev
 ```
 
@@ -74,7 +75,7 @@ Open **http://localhost:5173** in your browser. Leave CMD running; press **Ctrl+
 
 To build and preview the production frontend locally:
 
-```bat
+```
 npm run build
 npm run serve
 ```
@@ -85,23 +86,65 @@ Certificate QR codes created using a localhost address are only useful on that P
 
 ### Installing packages with `npm i <package-names>`
 
-`npm i` already installs everything declared in the project. If you want commands that **explicitly list every application package**, run the following in the existing `artifacts\care-learn` folder. These include all component libraries, runtime packages, type definitions and build tools declared by the app, plus the shared client's Supabase dependency. Dependencies of these packages are installed automatically.
+Run this single command in the existing `artifacts\care-learn` folder. The list was checked against every application `.jsx` file, including retained UI components and tests, plus JavaScript helpers, the shared client, CSS plugins, Vite configuration and type-checking requirements. It includes only required packages, without version numbers or Replit packages.
 
-Runtime packages:
-
-```bat
-npm i "qrcode@^1.5.4" "@supabase/supabase-js@^2.118.0"
+```
+npm i @hookform/resolvers @radix-ui/react-accordion @radix-ui/react-alert-dialog @radix-ui/react-avatar @radix-ui/react-checkbox @radix-ui/react-collapsible @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-label @radix-ui/react-progress @radix-ui/react-radio-group @radix-ui/react-scroll-area @radix-ui/react-select @radix-ui/react-slot @radix-ui/react-switch @radix-ui/react-toast @radix-ui/react-tooltip @supabase/supabase-js @tailwindcss/typography @tailwindcss/vite @tanstack/react-query @types/node @types/qrcode @types/react @types/react-dom @vitejs/plugin-react class-variance-authority clsx date-fns framer-motion jsqr lucide-react qrcode react react-dom react-hook-form tailwind-merge tailwindcss tw-animate-css typescript vite wouter zod
 ```
 
-The app currently declares its remaining libraries alongside its development tools. Install that full set with:
+Paste the command as one line, without adding quotes or a language label. Dependencies of these packages are installed automatically. Do not install `@workspace/api-client-react` from npm; the API client is included in the app's own `src/api` directory. All required application packages, including Supabase, compiler tools and type declarations, are declared in the app's own manifest.
 
-```bat
-npm i -D "@hookform/resolvers@^3.10.0" "@radix-ui/react-accordion@^1.2.4" "@radix-ui/react-alert-dialog@^1.1.7" "@radix-ui/react-aspect-ratio@^1.1.3" "@radix-ui/react-avatar@^1.1.4" "@radix-ui/react-checkbox@^1.1.5" "@radix-ui/react-collapsible@^1.1.4" "@radix-ui/react-context-menu@^2.2.7" "@radix-ui/react-dialog@^1.1.7" "@radix-ui/react-dropdown-menu@^2.1.7" "@radix-ui/react-hover-card@^1.1.7" "@radix-ui/react-label@^2.1.3" "@radix-ui/react-menubar@^1.1.7" "@radix-ui/react-navigation-menu@^1.2.6" "@radix-ui/react-popover@^1.1.7" "@radix-ui/react-progress@^1.1.3" "@radix-ui/react-radio-group@^1.2.4" "@radix-ui/react-scroll-area@^1.2.4" "@radix-ui/react-select@^2.1.7" "@radix-ui/react-separator@^1.1.3" "@radix-ui/react-slider@^1.2.4" "@radix-ui/react-slot@^1.2.0" "@radix-ui/react-switch@^1.1.4" "@radix-ui/react-tabs@^1.1.4" "@radix-ui/react-toast@^1.2.7" "@radix-ui/react-toggle@^1.1.3" "@radix-ui/react-toggle-group@^1.1.3" "@radix-ui/react-tooltip@^1.2.0" "@replit/vite-plugin-cartographer@0.5.1" "@replit/vite-plugin-dev-banner@0.1.2" "@replit/vite-plugin-runtime-error-modal@0.0.6" "@tailwindcss/typography@^0.5.15" "@tailwindcss/vite@4.2.1" "@tanstack/react-query@5.90.21" "@types/node@25.3.5" "@types/qrcode@^1.5.6" "@types/react@19.2.14" "@types/react-dom@19.2.3" "@vitejs/plugin-react@5.1.4" "class-variance-authority@0.7.1" "clsx@2.1.1" "cmdk@^1.1.1" "date-fns@^3.6.0" "embla-carousel-react@^8.6.0" "framer-motion@12.35.1" "input-otp@^1.4.2" "jsqr@^1.4.0" "lucide-react@0.545.0" "next-themes@^0.4.6" "react@19.1.10" "react-day-picker@^9.11.1" "react-dom@19.1.10" "react-hook-form@^7.71.2" "react-icons@^5.4.0" "react-resizable-panels@^2.1.7" "recharts@^2.15.2" "sonner@^2.0.7" "tailwind-merge@3.5.0" "tailwindcss@4.2.1" "tw-animate-css@^1.4.0" "typescript@5.9.3" "vaul@^1.1.2" "vite@7.3.1" "wouter@^3.3.5" "zod@3.25.76"
+For additional packages, use `npm i <package-names>` or `npm i -D <package-names>`; replace the placeholder without typing angle brackets. Keep React and React DOM on the **exact same version** when updating them. For repeatable reinstalls, use `npm ci` in the folder containing the matching `package-lock.json`: the repository root for a workspace install, or the app folder for an independent installation.
+
+The repository's `package.json` retains its tested dependency versions/ranges; the version-free command instead asks npm for current releases, which may include newer major versions that require code changes. Removing versions or unused libraries does not guarantee a vulnerability-free installation. After installing, run `npm audit` to identify affected packages. Review any proposed updates before applying them, and do not use `npm audit fix --force` blindly because it can introduce breaking upgrades.
+
+#### Required package inventory
+
+The command above contains **43 registry packages** covering the following uses. Dependencies pulled in by these packages are installed automatically; do not list transitive packages separately.
+
+| Purpose | Packages |
+| --- | --- |
+| React rendering and routing | `react`, `react-dom`, `wouter` |
+| Supabase access and data caching | `@supabase/supabase-js`, `@tanstack/react-query` |
+| Forms and validation | `@hookform/resolvers`, `react-hook-form`, `zod` |
+| Dialogs, menus and accessible overlays | `@radix-ui/react-alert-dialog`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-tooltip` |
+| Accessible controls and layout components | `@radix-ui/react-accordion`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-label`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-toast` |
+| Component styling utilities | `class-variance-authority`, `clsx`, `tailwind-merge` |
+| Animation and functional icons | `framer-motion`, `lucide-react` |
+| Dates and certificate QR generation | `date-fns`, `qrcode` |
+| Certificate QR decoding tests | `jsqr` |
+| Development server, build and type checking | `vite`, `@vitejs/plugin-react`, `typescript` |
+| CSS, typography and animation styles | `@tailwindcss/vite`, `@tailwindcss/typography`, `tailwindcss`, `tw-animate-css` |
+| Type declarations for development | `@types/node`, `@types/qrcode`, `@types/react`, `@types/react-dom` |
+
+The API client is included in the app's own `src/api` directory. No runtime source imports leave the app folder. The list intentionally excludes the separate component-preview workspace and the retired API server. The old shared-library entry points remain compatibility re-exports for repository tools; the independent app does not need them. The legacy cross-backend lesson test lives under the repository's `tests` directory rather than inside the portable frontend.
+
+Keep the Vite configuration's deduplication of `react`, `react-dom` and `@tanstack/react-query`. The application and its API hooks must use the same React and query-provider instances.
+
+### Removing previously installed Replit plugins
+
+Care Learn no longer requires Replit-specific packages. If they were installed in an older local copy, use the updated `vite.config.js` from this repository (which no longer imports the runtime-error plugin), then run this in the app folder:
+
+```
+npm uninstall @replit/vite-plugin-cartographer @replit/vite-plugin-dev-banner @replit/vite-plugin-runtime-error-modal
 ```
 
-Keep the quotes when pasting into CMD: they protect version-range `^` characters. Keep each command on a single line. Do not try to download `@workspace/api-client-react` from npm; it is the existing `lib/api-client-react` workspace and is linked automatically. The root's TypeScript/Prettier development dependencies are also installed automatically by the initial `npm i`.
+This removes the old dependencies from your local installation and updates your npm lockfile. It does not replace the standard Vite/React/Tailwind plugins, which are still required.
 
-For additional packages, use `npm i <package-names>` or `npm i -D <package-names>`; replace the placeholder without typing angle brackets. Keep React and React DOM on the **exact same version** when updating them. Use `npm ci` from the repository root for repeatable reinstalls after a `package-lock.json` has been created.
+### Troubleshooting a missing package such as wouter
+
+The full install command above already includes `wouter`. If Vite reports `Failed to resolve import wouter from src/App.jsx`, stop the dev server and open CMD in the **same app folder that contains `package.json` and `src/App.jsx`** (`artifacts\care-learn` in this repository). Run:
+
+```
+npm i wouter --include=dev
+npm run dev -- --force
+```
+
+The first command installs the router and includes development dependencies even if your npm environment normally omits them. The second restarts Vite with a fresh dependency cache. Installing packages globally or in a different project will not fix imports in this app.
+
+For any other missing-package error, rerun the full package command above from that same folder and check that npm finishes successfully. Check the local router installation with `npm ls wouter`. If npm reports an installation error, resolve that error before restarting Vite.
+
+The dependency checks in `tests/local-setup.test.mjs` compare the install command against **every JavaScript/JSX file (including tests), shared-client imports, CSS imports/plugins and Vite configuration imports**, not only the dependency manifests. They also reject unused library declarations and stale package names in the command, while allowing required compiler/type packages.
 
 ### Relative imports
 
@@ -112,7 +155,9 @@ import { Button } from "../components/ui/button.jsx";
 import { cn } from "./utils.js";
 ```
 
-Do not use `@/...` for application imports. Use `./`, `../` or `../../` according to the importing file's location. Genuine package imports, such as `react`, `@supabase/supabase-js` and `@radix-ui/react-dialog`, keep their published package names. The internal `@workspace/api-client-react` import is a real package linked by the workspace, not a component-path alias.
+Do not use `@/...` or `@workspace/...` for application-owned source imports. Use `./`, `../` or additional parent segments according to the importing file's location, without leaving the app folder. Genuine registry package imports, such as `react`, `@supabase/supabase-js` and `@radix-ui/react-dialog`, keep their published package names. Pages such as `src/pages/VerifyCertificate.jsx` import the client from `../api/index.js`; nested admin components use `../../api/index.js`.
+
+If a local copy still reports a missing `../../../../lib/api-client-react/src/index.js`, update the **whole app folder**, including the new `src/api` files and updated imports. Installing an npm package cannot supply these application-owned source files. Stop the dev server and restart it with `npm run dev -- --force` after updating.
 
 ## Course catalogue and estimated durations
 
@@ -347,7 +392,7 @@ Persistent records in Supabase cover accounts, profiles, courses, modules, lesso
 ### Prerequisites
 
 - Node.js and pnpm for Replit workflows; npm is also supported directly in the existing project as described above.
-- `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` for the configured backend.
+- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for the configured backend.
 - The Replit workflow provides `PORT` and `BASE_PATH`; outside Replit these default to local development settings.
 
 Keep credentials in the workspace's secret/environment configuration, never in this README or source control.
