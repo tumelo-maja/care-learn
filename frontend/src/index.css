@@ -285,3 +285,10 @@
 .lesson-content dt { font-weight: 600; }
 .lesson-content dd { margin: 0 0 .75rem 0; }
 @media (max-width: 640px) { .lesson-content { font-size: 1rem; } }
+
+@layer utilities {
+  /* Consistent page gutters without changing modal or certificate layouts. */
+  .app-main .container {
+    padding-inline: clamp(1.5rem, 4vw, 4rem);
+  }
+}

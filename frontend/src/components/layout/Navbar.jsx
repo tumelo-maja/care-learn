@@ -24,7 +24,7 @@ export function Navbar() {
         { href: "/admin", label: "Admin", show: isAdmin },
     ];
     return (<header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-6 sm:px-8 lg:px-12 min-h-20 py-4 flex items-center justify-between gap-6">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <div className="bg-primary p-1.5 rounded-xl">
