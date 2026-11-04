@@ -1,5 +1,4 @@
 import { useParams, Link, useLocation } from "wouter";
-import { countryLabel } from "../lib/trainingCountry.js";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Menu, PlayCircle } from "lucide-react";
 import { LessonContent, LessonVideo } from "../components/lesson/LessonContent.jsx";
@@ -44,7 +43,7 @@ export default function LessonPlayer() {
         return (<div className="min-h-[100dvh] flex flex-col items-center justify-center gap-4 p-6 text-center" role="alert">
         {error?.status === 403 ? (<>
             <p className="font-semibold" data-testid="text-lesson-paused">This lesson is paused for review.</p>
-            <p className="text-sm text-muted-foreground max-w-md">The course content is being checked before it is available for your training track. Your progress and any certificates are kept.</p>
+            <p className="text-sm text-muted-foreground max-w-md">The course content is being checked before it is available. Your progress and any certificates are kept.</p>
           </>) : (<>
             <p className="font-semibold">Could not load this lesson.</p>
             <p className="text-sm text-muted-foreground">{errorMessage(error)}</p>
@@ -105,7 +104,7 @@ export default function LessonPlayer() {
         const showText = currentLesson.contentType !== "video" || !!currentLesson.content;
         return (<>
         {currentLesson.videoUrl && <LessonVideo key={currentLesson.id} url={currentLesson.videoUrl} title={currentLesson.title}/>}
-        {showText && <LessonContent key={`${currentLesson.id}-${enrolment?.country ?? "shared"}`} html={currentLesson.content} className="mb-12" interactive={isHbc001Prototype(course.code, currentLesson.title, currentIndex)}/>}
+        {showText && <LessonContent key={currentLesson.id} html={currentLesson.content} className="mb-12" interactive={isHbc001Prototype(course.code, currentLesson.title, currentIndex)}/>}
       </>);
     };
     const SidebarContent = () => (<div className="flex flex-col h-full bg-muted/40 border-r">
@@ -182,7 +181,6 @@ export default function LessonPlayer() {
                 {currentLesson?.contentType} Lesson
                 {currentLesson && <span className="normal-case tracking-normal font-medium">· {currentIndex + 1} of {allLessons.length}</span>}
               </div>
-              {countryLabel(enrolment?.country) && (<span className="ml-2 inline-flex items-center px-3 py-1 rounded-full border text-xs font-medium text-muted-foreground mb-4" data-testid="text-training-country">Training for {countryLabel(enrolment?.country)}</span>)}
               <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground leading-tight">{currentLesson?.title}</h1>
               {isCurrentDone && (<p className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary" data-testid="status-lesson-complete">
                   <CheckCircle2 className="w-4 h-4"/> Completed

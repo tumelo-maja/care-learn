@@ -1,24 +1,25 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildCertificateHtml, formatOnlineAwardDate, ONLINE_CERTIFICATE_HEADING, ONLINE_CERTIFICATE_STATEMENT, ONLINE_CERTIFICATE_DISCLAIMER } from "./certificateTemplate";
+import { buildCertificateHtml, formatOnlineAwardDate, ONLINE_CERTIFICATE_HEADING, ONLINE_CERTIFICATE_STATEMENT, ONLINE_CERTIFICATE_DISCLAIMER } from "./certificateTemplate.js";
 const original = {
     learnerName: "Morgan Taylor", courseTitle: "Understanding Your Role as a Care Worker",
     issuedAt: "2026-10-27T12:00:00.000Z",
     verificationUrl: "https://care.example/verify/UNIT-ONLY-NOT-AN-ISSUED-AWARD",
 };
 const courseVersion = "abc12345".repeat(8);
-test("new A4 document includes online-learning wording, Africa branding, track, date and QR", () => {
-    for (const [trainingCountry, label] of [["ZM", "Track A"], ["ZA", "Track B"]]) {
+test("new A4 document includes online-learning wording, Africa branding, date and QR without tracks", () => {
+    for (const trainingCountry of ["ZM", "ZA"]) {
         const html = buildCertificateHtml({ ...original, formatVersion: 1, trainingCountry, courseVersion,
             completedAt: "2026-10-26T12:00:00.000Z" });
         for (const text of [ONLINE_CERTIFICATE_HEADING, ONLINE_CERTIFICATE_STATEMENT, ONLINE_CERTIFICATE_DISCLAIMER,
-            "Care Learn", "Morgan Taylor", original.courseTitle, label, "26 October 2026", courseVersion]) {
+            "Care Learn", "Morgan Taylor", original.courseTitle, "26 October 2026", courseVersion]) {
             assert.ok(html.includes(text), `Missing ${text}`);
         }
         assert.match(html, /size: A4 portrait/);
         assert.ok(html.includes('aria-label="Verify this certificate online"') && html.includes(original.verificationUrl));
         assert.ok(!/CPD accreditation|government approv|UK Care Certificate|Home Care Training UK/i.test(html));
         assert.ok(!html.includes("Certificate ID"));
+        assert.doesNotMatch(html, /Training track|Track A|Track B/);
         assert.doesNotMatch(html, /\b(?:UK|United Kingdom|Zambia|South Africa)\b/);
     }
 });
@@ -32,9 +33,9 @@ test("legacy rendering does not gain new wording, an inferred country or invente
     assert.ok(!html.includes("Training country:"));
     assert.ok(!html.includes("Course version:"));
 });
-test("unknown historical enrolment country is explicit rather than guessed", () => {
+test("unknown historical enrolment country is not displayed or guessed", () => {
     const html = buildCertificateHtml({ ...original, formatVersion: 1, trainingCountry: null, courseVersion });
-    assert.ok(html.includes("Training track: <strong>Not recorded</strong>"));
+    assert.ok(!html.includes("Training track:"));
 });
 test("snapshot identity, course title and version remain escaped HTML text", () => {
     const html = buildCertificateHtml({ ...original, formatVersion: 1, trainingCountry: "ZM",

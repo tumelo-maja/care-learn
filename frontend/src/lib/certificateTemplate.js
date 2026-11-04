@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import { buildQrSvg, safeLearnerName } from "./certificateVerification.js";
-import { countryLabel } from "./trainingCountry.js";
 /** Actual CSS pixel size of an A4 sheet at 96dpi. */
 export const CERT_PX_WIDTH = 794;
 export const CERT_PX_HEIGHT = 1123;
@@ -78,7 +77,6 @@ export function buildCertificateHtml(data) {
     catch {
         dateText = "";
     }
-    const country = countryLabel(data.trainingCountry) ?? "Not recorded";
     return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"/>
 <title>${online ? ONLINE_CERTIFICATE_HEADING : "Certificate of Completion"} - ${escapeHtml(course)}</title>
@@ -144,7 +142,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:#16324a}
 <div class="name" style="font-size:${nameSize(name)}px">${escapeHtml(name)}</div>
 ${online ? "" : '<div class="lead">has successfully completed the course</div>'}
 <div class="course" style="font-size:${courseSize(course)}px">${escapeHtml(course)}</div>
-${online ? `<p class="statement">${ONLINE_CERTIFICATE_STATEMENT}</p><div class="award-meta">Training track: <strong>${country}</strong>${data.courseVersion ? `<div class="version">Course version: ${escapeHtml(data.courseVersion)}</div>` : ""}</div>` : ""}
+${online ? `<p class="statement">${ONLINE_CERTIFICATE_STATEMENT}</p><div class="award-meta">${data.courseVersion ? `<div class="version">Course version: ${escapeHtml(data.courseVersion)}</div>` : ""}</div>` : ""}
 <div class="foot"><p>${online ? ONLINE_CERTIFICATE_DISCLAIMER : "Issued by Care Learn on completion of all lessons and assessments in this course. Keep this certificate with your professional care training records."}</p><div class="mark">${logoMarkSvg(30)}</div></div>
 </main>
 </div></div></div></body></html>`;

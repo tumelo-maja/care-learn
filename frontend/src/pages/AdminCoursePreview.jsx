@@ -12,12 +12,10 @@ import { ScrollArea } from "../components/ui/scroll-area.jsx";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "../components/ui/sheet.jsx";
 import { Skeleton } from "../components/ui/skeleton.jsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.jsx";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select.jsx";
 import { cn } from "../lib/utils.js";
 import { errorMessage, orderModules } from "../lib/learning.js";
-import { TRAINING_COUNTRIES, countryLabel } from "../lib/trainingCountry.js";
 /** Persistent banner: preview state lives in React memory only; nothing is saved. */
-function PreviewBanner({ country, onCountry, locked }) {
+function PreviewBanner() {
     return (<div role="region" aria-label="Admin preview notice" className="shrink-0 border-b-2 border-amber-500/60 bg-amber-100 text-amber-950 dark:bg-amber-950 dark:text-amber-100">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
         <span className="inline-flex items-center gap-1.5 rounded-md bg-amber-950 px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-amber-50" data-testid="badge-admin-preview">
@@ -27,14 +25,6 @@ function PreviewBanner({ country, onCountry, locked }) {
           Nothing is saved: no enrolment, progress, attempt or certificate. Reloading or leaving this page clears all preview progress, answers and results.
         </p>
         <div className="flex items-center gap-2">
-          <label htmlFor="preview-country" className="text-xs font-semibold">Training track</label>
-          <Select value={country} onValueChange={(v) => onCountry(v)} disabled={locked}>
-            <SelectTrigger id="preview-country" className="h-8 w-40 bg-background text-foreground" data-testid="select-preview-country"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {TRAINING_COUNTRIES.map((c) => <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          {locked && <span className="sr-only" role="status">Country locked while the preview assessment request is in progress.</span>}
           <Button asChild size="sm" variant="outline" className="h-8 bg-background text-foreground">
             <Link href="/admin" data-testid="link-exit-preview">Exit preview</Link>
           </Button>
@@ -45,7 +35,7 @@ function PreviewBanner({ country, onCountry, locked }) {
 export default function AdminCoursePreview() {
     const { id } = useParams();
     const courseId = parseInt(id || "0", 10);
-    const [country, setCountry] = useState("ZM");
+    const country = "ZM"; // Legacy preview API parameter; content is shared.
     const [mode, setMode] = useState({ kind: "lesson", lessonId: null });
     const [viewed, setViewed] = useState(new Set());
     const [attempt, setAttempt] = useState(null);
@@ -72,17 +62,7 @@ export default function AdminCoursePreview() {
         start.reset();
         submit.reset();
     };
-    const changeCountry = (c) => {
-        if (c === country)
-            return;
-        if (start.isPending || submit.isPending)
-            return;
-        contextRef.current += 1;
-        resetTemporary();
-        setCountry(c);
-        setMode({ kind: "lesson", lessonId: null });
-    };
-    const banner = <PreviewBanner country={country} onCountry={changeCountry} locked={start.isPending || submit.isPending}/>;
+    const banner = <PreviewBanner/>;
     const stale = !!query.data && query.data.country !== country;
     if (!query.isError && (query.isLoading || stale)) {
         return (<div className="flex min-h-[100dvh] flex-col bg-background">
@@ -225,7 +205,7 @@ export default function AdminCoursePreview() {
           <span className="normal-case tracking-normal font-medium">· {currentIndex + 1} of {allLessons.length}</span>
         </div>
         <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full border text-xs font-medium text-muted-foreground mb-4" data-testid="text-preview-country">
-          Previewing for {countryLabel(country)}
+          Shared course preview
         </span>
         <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground leading-tight">{currentLesson.title}</h1>
         <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -291,7 +271,7 @@ export default function AdminCoursePreview() {
         <div className="bg-card border rounded-2xl p-6 md:p-10 shadow-sm">
           <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">{result ? "Retake the preview" : "Final knowledge check preview"}</h2>
           <p className="text-muted-foreground mb-4 leading-relaxed">
-            When this course's question bank is ready, each preview draws 10 questions for {countryLabel(country)}. Learners need {start.data?.passMark ?? 90}% to pass. Lesson completion is not required in preview{percent < 100 ? ` (temporary progress: ${percent}%)` : ""}.
+            When this course's question bank is ready, each preview draws 10 shared questions. Learners need {start.data?.passMark ?? 90}% to pass. Lesson completion is not required in preview{percent < 100 ? ` (temporary progress: ${percent}%)` : ""}.
             {lastToken && " A retake draws a different set of ten questions; individual questions may recur."}
           </p>
           {start.isError && (<Alert variant="destructive" className="mb-6" role="alert">
@@ -350,7 +330,7 @@ export default function AdminCoursePreview() {
                     <h1 className="text-3xl md:text-4xl font-serif font-bold flex items-center gap-3">
                       Assessment
                     </h1>
-                    <p className="text-muted-foreground mt-2">{course.title} · Previewing for {countryLabel(country)}</p>
+                    <p className="text-muted-foreground mt-2">{course.title} · Shared course preview</p>
                   </div>
                   {assessmentBody}
                 </>)}

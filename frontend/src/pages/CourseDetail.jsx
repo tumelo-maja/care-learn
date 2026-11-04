@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { TRAINING_COUNTRIES, countryLabel } from "../lib/trainingCountry.js";
 import { useParams, Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, PlayCircle, CheckCircle2, AlertCircle } from "lucide-react";
@@ -24,7 +23,6 @@ export default function CourseDetail() {
     const [, navigate] = useLocation();
     const login = (returnTo) => navigate(`/sign-in${returnTo ? `?redirect_url=${encodeURIComponent(returnTo)}` : ""}`);
     const qc = useQueryClient();
-    const [country, setCountry] = useState("ZM");
     const [feedback, setFeedback] = useState(() => (courseId ? takeFeedback(courseId) : null));
     const { data, isLoading, error: courseError } = useGetCourse(courseId, undefined, {
         query: { queryKey: getGetCourseQueryKey(courseId), enabled: !!courseId }
@@ -47,7 +45,7 @@ export default function CourseDetail() {
             },
             onError: (err) => {
                 const paused = err?.status === 403;
-                toast({ title: paused ? "Paused for review" : "Could not enrol", description: paused ? "This course is not currently approved for the selected country. Please check back later." : errorMessage(err), variant: "destructive" });
+                toast({ title: paused ? "Paused for review" : "Could not enrol", description: paused ? "This course is awaiting approval. Please check back later." : errorMessage(err), variant: "destructive" });
                 if (paused)
                     qc.invalidateQueries({ queryKey: getGetCourseQueryKey(courseId) });
             }
@@ -90,7 +88,7 @@ export default function CourseDetail() {
         return (<AppLayout>
         <div className="container mx-auto px-4 py-20 text-center max-w-lg" role="alert">
           <h1 className="text-2xl font-bold" data-testid="text-course-paused">Paused for review</h1>
-          <p className="mt-3 text-muted-foreground">This course is being checked before it is available in your country. Your existing progress and certificates are kept.</p>
+          <p className="mt-3 text-muted-foreground">This course is being checked before it is available. Your existing progress and certificates are kept.</p>
           <div className="mt-6 flex justify-center gap-2">
             <Button asChild variant="outline"><Link href="/certificates" data-testid="link-paused-certificates">My certificates</Link></Button>
             <Button asChild><Link href="/courses" data-testid="link-paused-courses">Back to Courses</Link></Button>
@@ -106,8 +104,7 @@ export default function CourseDetail() {
         </div>
       </AppLayout>);
     }
-    const available = TRAINING_COUNTRIES.filter((c) => (course.availableCountries ?? []).includes(c.code));
-    const chosen = available.some((c) => c.code === country) ? country : null;
+    const canEnrol = (course.availableCountries ?? []).length > 0;
     const modules = orderModules(course);
     const totalLessons = modules.reduce((acc, mod) => acc + mod.lessons.length, 0);
     const completedIds = new Set(enrolment?.completedLessonIds ?? []);
@@ -142,9 +139,6 @@ export default function CourseDetail() {
             </div>
 
             {isEnrolled ? (<div className="bg-slate-800/80 backdrop-blur-md p-6 rounded-2xl border border-slate-700 max-w-md">
-                {countryLabel(enrolment.country) && (<div className="mb-4 text-sm text-slate-300" data-testid="text-training-country">
-                    Training track: <Badge variant="outline" className="ml-1 border-primary/60 text-primary">{countryLabel(enrolment.country)}</Badge>
-                  </div>)}
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-medium text-white">Lessons complete</span>
                   <span className="text-primary font-bold" data-testid="text-progress">{enrolment.progressPercent}%</span>
@@ -171,31 +165,19 @@ export default function CourseDetail() {
                   </div>)}
                 {enrolment.retaking && <p className="mt-3 text-sm text-slate-300">Retaking this course. Your previously earned certificate stays valid. {enrolment.completedAt && <Link href="/certificates" className="underline">View certificate</Link>}</p>}
               </div>) : (<div className="flex flex-col sm:flex-row sm:items-end gap-4">
-              {isAuthenticated && (<fieldset className="space-y-2">
-                  <legend className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Training track</legend>
-                  <p className="text-xs text-slate-300 mb-2">Choose the track recommended by your training coordinator. Apply learning according to local requirements.</p>
-                  <div className="inline-flex rounded-full border border-slate-700 bg-slate-800/80 p-1" role="radiogroup" aria-label="Training track">
-                    {TRAINING_COUNTRIES.map((c) => (<button key={c.code} type="button" role="radio" aria-checked={chosen === c.code} disabled={!available.some((a) => a.code === c.code)} aria-disabled={!available.some((a) => a.code === c.code)} title={available.some((a) => a.code === c.code) ? undefined : "Paused for review in this country"} onClick={() => setCountry(c.code)} className={`px-4 h-10 rounded-full text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${chosen === c.code ? "bg-primary text-primary-foreground" : "text-slate-300 hover:text-white"}`} data-testid={`radio-country-${c.code}`}>
-                        {c.label}
-                      </button>))}
-                  </div>
-                  <p className="text-xs text-slate-400">This can't be changed after you enrol.</p>
-                </fieldset>)}
               <Button data-testid="button-enrol" size="lg" className="text-base px-8 h-14 rounded-full shadow-lg shadow-primary/20" onClick={() => {
                 if (!isAuthenticated) {
                     login(`/courses/${course.id}`);
                     return;
                 }
-                if (!chosen)
+                if (!canEnrol)
                     return;
-                enrolMutation.mutate({ courseId, data: { country: chosen } });
-            }} disabled={enrolMutation.isPending || (isAuthenticated && !chosen)}>
-                {enrolMutation.isPending ? "Enrolling..." : isAuthenticated && !chosen ? "Paused for review" : "Enrol Now for Free"}
+                enrolMutation.mutate({ courseId, data: {} });
+            }} disabled={enrolMutation.isPending || (isAuthenticated && !canEnrol)}>
+                {enrolMutation.isPending ? "Enrolling..." : isAuthenticated && !canEnrol ? "Paused for review" : "Enrol Now for Free"}
               </Button>
-              {isAuthenticated && !chosen && (<p className="text-sm text-slate-300 max-w-xs" data-testid="text-enrol-paused">
-                  {available.length === 0
-                    ? "New enrolment is paused while this course is reviewed for both training tracks."
-                    : `Not yet approved for ${countryLabel(country)}. Choose an approved track to enrol.`}
+              {isAuthenticated && !canEnrol && (<p className="text-sm text-slate-300 max-w-xs" data-testid="text-enrol-paused">
+                  New enrolment is paused while this course is reviewed.
                 </p>)}
               </div>)}
           </div>

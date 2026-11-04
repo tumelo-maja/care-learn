@@ -7,7 +7,6 @@ import { Button } from "../components/ui/button.jsx";
 import { Skeleton } from "../components/ui/skeleton.jsx";
 import { isNotFoundError, safeLearnerName } from "../lib/certificateVerification.js";
 import { ONLINE_CERTIFICATE_DISCLAIMER, formatOnlineAwardDate } from "../lib/certificateTemplate.js";
-import { countryLabel } from "../lib/trainingCountry.js";
 function usePublicPageMeta(title) {
     useEffect(() => {
         const prevTitle = document.title;
@@ -121,17 +120,13 @@ export default function VerifyCertificate() {
           </div>
           {cert.formatVersion === 1 && <>
             <div>
-              <dt className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Training track</dt>
-              <dd data-testid="text-verified-country">{countryLabel(cert.trainingCountry) ?? "Not recorded"}</dd>
-            </div>
-            <div>
               <dt className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Completed course version</dt>
               <dd className="font-mono text-sm break-all" data-testid="text-verified-version">{cert.courseVersion}</dd>
             </div>
           </>}
         </dl>
         <p className="px-8 pb-8 text-sm text-muted-foreground leading-relaxed">
-          Care Learn has a matching issued certificate record. Compare the name, course{cert.formatVersion === 1 ? ", training track, course version" : ""} and date above with the printed certificate; if any detail differs, the copy you hold may have been altered.
+          Care Learn has a matching issued certificate record. Compare the name, course{cert.formatVersion === 1 ? ", course version" : ""} and date above with the printed certificate; if any detail differs, the copy you hold may have been altered.
         </p>
         {cert.formatVersion === 1 && <p className="px-8 pb-8 text-xs text-muted-foreground">{ONLINE_CERTIFICATE_DISCLAIMER}</p>}
       </section>
