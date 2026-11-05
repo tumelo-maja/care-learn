@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Menu, PlayCircle } from "lucide-react";
@@ -10,7 +11,6 @@ import { Skeleton } from "../components/ui/skeleton.jsx";
 import { useToast } from "../hooks/use-toast.js";
 import { cn } from "../lib/utils.js";
 import { errorMessage, orderModules, refreshLearning } from "../lib/learning.js";
-import { isHbc001Prototype } from "../lib/lessonPresentation.js";
 function ProgressBar({ percent, className }) {
     return (<div className={className}>
       <div className="flex justify-between text-xs mb-1.5 font-medium">
@@ -34,6 +34,8 @@ export default function LessonPlayer() {
     });
     const { data: enrolmentsData } = useGetMyEnrolments({ query: { queryKey: getGetMyEnrolmentsQueryKey() } });
     const completeMutation = useMarkLessonComplete();
+    // Presentation-only: which lesson's last content page has been reached. Never written to progress.
+    const [pageState, setPageState] = useState({ lessonId: null, isLast: false });
     if (isLoading) {
         return (<div className="min-h-[100dvh] w-full flex items-center justify-center bg-background" aria-busy="true">
         <Skeleton className="w-16 h-16 rounded-full"/>
@@ -50,7 +52,7 @@ export default function LessonPlayer() {
           </>)}
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => refetch()} data-testid="button-retry-lesson">Try again</Button>
-          <Button asChild><Link href={`/courses/${courseId}`}>Back to course</Link></Button>
+          <Button asChild variant="destructive" className="bg-red-700 hover:bg-red-800 text-white"><Link href={`/courses/${courseId}`}>Back to course</Link></Button>
         </div>
       </div>);
     }
@@ -92,26 +94,27 @@ export default function LessonPlayer() {
             toast({ title: "Could not save progress", description: errorMessage(err), variant: "destructive" });
         }
     };
+    const hasText = !!currentLesson && (currentLesson.contentType !== "video" || !!currentLesson.content);
+    const onLastPage = !hasText || (pageState.lessonId === currentLesson?.id && pageState.isLast);
     const pending = completeMutation.isPending;
     const actionLabel = isLast ? "Take assessment" : isCurrentDone ? "Next lesson" : "Mark as complete";
     const renderContent = () => {
         if (!currentLesson) {
             return (<div className="p-8 bg-card border rounded-2xl">
           <p className="mb-4">This lesson could not be found.</p>
-          <Button asChild><Link href={`/courses/${courseId}`}>Back to course</Link></Button>
+          <Button asChild variant="destructive" className="bg-red-700 hover:bg-red-800 text-white"><Link href={`/courses/${courseId}`}>Back to course</Link></Button>
         </div>);
         }
-        const showText = currentLesson.contentType !== "video" || !!currentLesson.content;
         return (<>
+        <LessonContent key={currentLesson.id} html={currentLesson.content} lessonTitle={currentLesson.title} courseTitle={course.title} coverImageUrl={course.thumbnailUrl} className="mb-8" interactive onPageChange={({ isLast: last }) => setPageState({ lessonId: currentLesson.id, isLast: last })}/>
         {currentLesson.videoUrl && <LessonVideo key={currentLesson.id} url={currentLesson.videoUrl} title={currentLesson.title}/>}
-        {showText && <LessonContent key={currentLesson.id} html={currentLesson.content} className="mb-12" interactive={isHbc001Prototype(course.code, currentLesson.title, currentIndex)}/>}
       </>);
     };
     const SidebarContent = () => (<div className="flex flex-col h-full bg-muted/40 border-r">
       <div className="p-4 md:p-6 border-b bg-background shrink-0">
-        <Link href={`/courses/${course.id}`} className="text-sm text-muted-foreground hover:text-primary mb-3 flex items-center transition-colors" data-testid="link-back-course">
-          Back to Course
-        </Link>
+        <Button asChild variant="destructive" className="mb-3 bg-red-700 hover:bg-red-800 text-white shadow-sm">
+          <Link href={`/courses/${course.id}`} data-testid="link-back-course">Back to course</Link>
+        </Button>
         <h2 className="font-serif font-bold text-xl line-clamp-2">{course.title}</h2>
         {enrolment && <ProgressBar percent={enrolment.progressPercent} className="mt-4"/>}
       </div>
@@ -192,7 +195,7 @@ export default function LessonPlayer() {
 
             {renderContent()}
 
-            {currentLesson && (<div className="mt-12 flex flex-col sm:flex-row items-center justify-between p-6 bg-card border rounded-2xl shadow-sm gap-4">
+            {currentLesson && onLastPage && (<div className="mt-8 flex flex-col sm:flex-row items-center justify-between p-6 bg-card border rounded-2xl shadow-sm gap-4">
                 <div>
                   <h2 className="font-semibold text-lg">{isLast ? "Last lesson" : isCurrentDone ? "Lesson complete" : "Finished this lesson?"}</h2>
                   <p className="text-sm text-muted-foreground">

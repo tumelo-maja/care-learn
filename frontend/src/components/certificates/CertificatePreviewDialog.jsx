@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../ui/dia
 import { useToast } from "../../hooks/use-toast.js";
 import { currentVerificationUrl } from "../../lib/certificateVerification.js";
 import { buildCertificateHtml, CERT_PX_HEIGHT, CERT_PX_WIDTH } from "../../lib/certificateTemplate.js";
+import { useUserProfile } from "../../contexts/UserProfileContext.jsx";
+import { CertificateDevelopmentNotice } from "./CertificateDevelopmentNotice.jsx";
 function waitForFrame(frame) {
     return new Promise((resolve, reject) => {
         const ready = () => frame.contentDocument?.readyState === "complete" &&
@@ -32,6 +34,7 @@ function waitForFrame(frame) {
 }
 function PreviewBody({ code, onClose }) {
     const { toast } = useToast();
+    const { isAdmin } = useUserProfile();
     const { data, isLoading, isError, refetch, isFetching } = useGetCertificate(code, {
         query: { enabled: !!code, queryKey: getGetCertificateQueryKey(code) },
     });
@@ -87,6 +90,12 @@ function PreviewBody({ code, onClose }) {
             const fonts = frame.contentDocument?.fonts;
             if (fonts)
                 await Promise.race([fonts.ready, new Promise((r) => setTimeout(r, 3000))]);
+            for (const image of frame.contentDocument.images) {
+                if (!image.complete || image.naturalWidth === 0)
+                    throw new Error("Certificate logo failed to load.");
+                if (image.decode)
+                    await image.decode();
+            }
             win.focus();
             win.print();
         }
@@ -131,9 +140,7 @@ function PreviewBody({ code, onClose }) {
             }}/>
             </div>
           </div>)}
-        {import.meta.env.DEV && cert && !qrError && (<p role="note" className="mx-auto mt-4 max-w-[520px] rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-foreground" data-testid="text-dev-qr-warning">
-            Preview build: the QR code points to this development address. Publish the app, then download certificates again before sharing permanent verification links.
-          </p>)}
+        {cert && !qrError && <CertificateDevelopmentNotice isAdmin={isAdmin}/>}
         {printError && (<p role="alert" className="mt-4 text-sm text-destructive text-center" data-testid="text-print-error">{printError}</p>)}
       </div>
 

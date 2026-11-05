@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CheckCircle2, ChevronDown, XCircle } from "lucide-react";
 import { Button } from "../ui/button.jsx";
 import { Label } from "../ui/label.jsx";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group.jsx";
 import { cn } from "../../lib/utils.js";
-import { parseInteractiveLesson, safeLessonUrl } from "../../lib/lessonPresentation.js";
-import { SafeLessonHtml } from "./SafeLessonHtml";
+import { parseInteractiveLesson, practiceFeedback, safeLessonUrl } from "../../lib/lessonPresentation.js";
+import { htmlToTree, paginateBlocks, treeParts } from "../../lib/lessonPagination.js";
+import { LessonPager } from "./LessonPager.jsx";
+import { SafeLessonHtml } from "./SafeLessonHtml.jsx";
+import "./visual-pilot.css";
 const prose = "lesson-content prose prose-slate dark:prose-invert max-w-none";
 function BlockShell({ id, title, children, className }) {
     const headingId = `${id}-heading`;
-    return (<section aria-labelledby={title ? headingId : undefined} data-testid={`lesson-block-${id}`} className={cn("bg-card border rounded-2xl p-5 md:p-8 shadow-sm", className)}>
-      {title && (<h2 id={headingId} className="flex items-center gap-2 font-serif text-xl md:text-2xl text-primary mb-4" data-testid={`heading-${id}`}>
+    return (<section tabIndex={0} data-lesson-scroll aria-labelledby={title ? headingId : undefined} data-testid={`lesson-block-${id}`} className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain bg-card border rounded-2xl p-5 md:p-8 shadow-sm", className)}>
+      {title && (<h2 id={headingId} className="flex items-center gap-2 font-serif text-xl md:text-2xl text-primary mb-6" data-testid={`heading-${id}`}>
           {title}
         </h2>)}
       {children}
@@ -24,10 +27,12 @@ export function TeachingSection({ id, title, html, image }) {
       <SafeLessonHtml html={html} className={prose}/>
     </BlockShell>);
 }
-export function ExpandableExplanation({ id, title, html, defaultOpen = false }) {
-    const [open, setOpen] = useState(defaultOpen);
+export function ExpandableExplanation({ id, title, html, defaultOpen = false, open: openProp, onOpenChange }) {
+    const [localOpen, setLocalOpen] = useState(defaultOpen);
+    const open = openProp ?? localOpen;
+    const setOpen = (fn) => { const next = fn(open); setLocalOpen(next); onOpenChange?.(next); };
     const panelId = `${id}-panel`;
-    return (<section className="bg-card border rounded-2xl shadow-sm" data-testid={`lesson-block-${id}`}>
+    return (<section tabIndex={0} data-lesson-scroll aria-label={title} className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-card border rounded-2xl shadow-sm" data-testid={`lesson-block-${id}`}>
       <h2 className="m-0">
         <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen(o => !o)} data-testid={`button-toggle-${id}`} className="w-full flex items-center gap-2 text-left p-5 md:px-8 font-serif text-lg md:text-xl text-primary rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <span className="flex-1">{title || "More information"}</span>
@@ -45,32 +50,35 @@ export function KeyTakeaways({ id, title, html }) {
     </BlockShell>);
 }
 export function LessonSummary({ id, title, html }) {
-    return (<BlockShell id={id} title={title} className="border-l-4 border-l-primary">
+    return (<BlockShell id={id} title={title}>
       <SafeLessonHtml html={html} className={prose}/>
     </BlockShell>);
 }
-export function PracticeQuestionBlock({ title, question, scenario = false }) {
-    const [choice, setChoice] = useState("");
+export function PracticeQuestionBlock({ title, question, scenario = false, value, onValueChange }) {
+    const [localChoice, setLocalChoice] = useState("");
+    const choice = value ?? localChoice;
+    const setChoice = (next) => { setLocalChoice(next); onValueChange?.(next); };
     const chosen = choice === "" ? null : Number(choice);
-    const correct = chosen === question.correctOptionIndex;
+    const result = chosen === null ? null : practiceFeedback(question, chosen);
+    const correct = !!result?.correct;
     const headingId = `${question.id}-heading`;
     const promptId = `${question.id}-prompt`;
-    return (<section aria-labelledby={headingId} data-testid={`practice-${question.id}`} className="bg-card border border-primary/25 rounded-2xl p-5 md:p-8 shadow-sm">
-      <div className="flex flex-wrap items-center gap-2 mb-3">
+    return (<section tabIndex={0} data-lesson-scroll aria-labelledby={headingId} data-testid={`practice-${question.id}`} className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-card border border-primary/25 rounded-2xl p-5 md:p-8 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary">{scenario ? "Scenario practice" : "Knowledge check"}</span>
         <span className="text-xs rounded-full bg-muted text-muted-foreground px-2 py-0.5" data-testid={`text-practice-note-${question.id}`}>
           Practice only. Not graded or saved.
         </span>
       </div>
-      <h2 id={headingId} className="flex items-center gap-2 font-serif text-xl text-foreground mb-3">
+      <h2 id={headingId} className="flex items-center gap-2 font-serif text-xl text-foreground mb-5">
         {title}
       </h2>
-      <p id={promptId} className={cn("mb-4 leading-relaxed", scenario && "border-l-4 border-accent bg-accent/10 rounded-lg p-3")}>{question.prompt}</p>
-      <RadioGroup value={choice} onValueChange={setChoice} aria-labelledby={promptId} className="gap-2">
+      <p id={promptId} className="mb-6 leading-relaxed">{question.prompt}</p>
+      <RadioGroup value={choice} onValueChange={setChoice} aria-labelledby={promptId} className="gap-3">
         {question.options.map((option, i) => {
             const isChosen = chosen === i;
             const inputId = `${question.id}-option-${i}`;
-            return (<div key={i} className={cn("flex items-start gap-3 rounded-xl border p-3 transition-colors", isChosen && (correct ? "border-primary bg-primary/5" : "border-destructive bg-destructive/5"))}>
+            return (<div key={i} className={cn("flex items-start gap-3 rounded-xl border p-4 transition-colors", isChosen && (correct ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40" : "border-red-600 bg-red-50 dark:bg-red-950/40"))}>
               <RadioGroupItem value={String(i)} id={inputId} className="mt-0.5" data-testid={`radio-${question.id}-${i}`}/>
               <Label htmlFor={inputId} className="flex-1 font-normal leading-relaxed cursor-pointer">
                 <span className="font-semibold mr-1">{String.fromCharCode(65 + i)}.</span>{option}
@@ -79,12 +87,12 @@ export function PracticeQuestionBlock({ title, question, scenario = false }) {
         })}
       </RadioGroup>
       <div aria-live="polite">
-        {chosen !== null && (<div data-testid={`practice-feedback-${question.id}`} className={cn("mt-4 rounded-xl border-l-4 p-4", correct ? "border-primary bg-primary/10" : "border-destructive bg-destructive/10")}>
-            <p className="flex items-center gap-2 font-semibold mb-1" data-testid={`status-practice-${question.id}`}>
-              {correct ? <CheckCircle2 className="w-5 h-5 text-primary" aria-hidden="true"/> : <XCircle className="w-5 h-5 text-destructive" aria-hidden="true"/>}
-              Option {String.fromCharCode(65 + chosen)} is {correct ? "appropriate" : "not the most appropriate choice"}.
+        {chosen !== null && (<div data-testid={`practice-feedback-${question.id}`} className={cn("mt-6 rounded-xl border p-4", correct ? "border-emerald-600 bg-emerald-50 text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-50" : "border-red-600 bg-red-50 text-red-950 dark:bg-red-950/40 dark:text-red-50")} data-result={correct ? "correct" : "incorrect"}>
+            <p className={cn("flex items-center gap-2 font-semibold mb-1", correct ? "text-emerald-800 dark:text-emerald-300" : "text-red-700 dark:text-red-300")} data-testid={`status-practice-${question.id}`}>
+              {correct ? <CheckCircle2 className="w-5 h-5 text-emerald-700" aria-hidden="true"/> : <XCircle className="w-5 h-5 text-red-600" aria-hidden="true"/>}
+              {result.title}
             </p>
-            <p className="leading-relaxed">{question.feedback}</p>
+            <p className="leading-relaxed" data-testid={`text-practice-explanation-${question.id}`}>{result.text}</p>
             <Button type="button" variant="ghost" size="sm" className="mt-2" onClick={() => setChoice("")} data-testid={`button-reset-${question.id}`}>
               Try again
             </Button>
@@ -92,12 +100,12 @@ export function PracticeQuestionBlock({ title, question, scenario = false }) {
       </div>
     </section>);
 }
-function renderBlock(block) {
+function renderBlock(block, state) {
     if (block.type === "knowledge-check" || block.type === "scenario") {
-        return <PracticeQuestionBlock key={`${block.id}:${block.question.prompt}`} title={block.title} question={block.question} scenario={block.type === "scenario"}/>;
+        return <PracticeQuestionBlock key={`${block.id}:${block.question.prompt}`} title={block.title} question={block.question} scenario={block.type === "scenario"} value={state.answers[block.question.id] ?? ""} onValueChange={(v) => state.setAnswers(a => ({ ...a, [block.question.id]: v }))}/>;
     }
     if (block.type === "explanation")
-        return <ExpandableExplanation key={block.id} {...block} defaultOpen={block.title === "Reviewer notes"}/>;
+        return <ExpandableExplanation key={block.id} id={block.id} title={block.title} html={block.html} open={state.open[block.id] ?? true} onOpenChange={(o) => state.setOpen(m => ({ ...m, [block.id]: o }))}/>;
     if (block.type === "takeaways")
         return <KeyTakeaways key={block.id} {...block}/>;
     if (block.type === "summary")
@@ -108,11 +116,19 @@ function renderBlock(block) {
     </div>);
     return <TeachingSection key={block.id} id={block.id} title={block.title} html={block.html}/>;
 }
-function Blocks({ html }) {
-    const [blocks] = useState(() => parseInteractiveLesson(html));
-    return <div className="space-y-5 md:space-y-6" data-testid="interactive-lesson">{blocks.map(renderBlock)}</div>;
+function Blocks({ html, onPageChange, openingPage, className }) {
+    const pages = useMemo(() => paginateBlocks(parseInteractiveLesson(html), h => treeParts(htmlToTree(h))), [html]);
+    // Lifted so answers and open panels survive moving between pages.
+    const [answers, setAnswers] = useState({});
+    const [open, setOpen] = useState({});
+    const state = { answers, setAnswers, open, setOpen };
+    // Constrain sections to the view so their own overflow scrolls, not the pager.
+    const views = pages.map((page, i) => <div key={i} className={cn("h-full min-h-0 flex flex-col gap-5 md:gap-6", className)} data-testid="interactive-lesson">{page.map(b => renderBlock(b, state))}</div>);
+    if (!views.length) views.push(<section key="empty" tabIndex={0} data-lesson-scroll aria-label="Lesson content" className="h-full overflow-y-auto overscroll-contain p-5"><p>No content provided.</p></section>);
+    if (openingPage) views.unshift(openingPage);
+    return <LessonPager pages={views} onPageChange={onPageChange}/>;
 }
 /** Interactive presentation of stored lesson HTML; local state resets whenever html changes. */
-export function InteractiveLesson({ html }) {
-    return <Blocks key={html} html={html}/>;
+export function InteractiveLesson({ html, onPageChange, openingPage, className }) {
+    return <Blocks key={html} html={html} openingPage={openingPage} onPageChange={onPageChange} className={className}/>;
 }

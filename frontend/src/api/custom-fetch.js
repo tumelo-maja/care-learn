@@ -1,8 +1,9 @@
 import { supabase } from "./supabase.js";
+import { websiteResponseText, websiteText } from "../lib/websiteText.js";
 
 export class ApiError extends Error {
   constructor(message, status = 400, data = null) {
-    super(message);
+    super(websiteText(message));
     this.name = "ApiError";
     this.status = status;
     this.data = data;
@@ -25,5 +26,5 @@ export async function customFetch(input, options = {}) {
   const { data, error } = await request;
   if (error) throw new ApiError(error.message, error.status || 500, error);
   if (data?.error) throw new ApiError(data.error, data.status || 400, data);
-  return data;
+  return websiteResponseText(data);
 }

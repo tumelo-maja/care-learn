@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatCourseDuration } from "../lib/courseDuration.js";
 import { useParams, Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, PlayCircle, CheckCircle2, AlertCircle } from "lucide-react";
@@ -133,7 +134,7 @@ export default function CourseDetail() {
             </p>
             
             <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-slate-300 mb-10">
-              <div>{course.estimatedMinutes} Minutes</div>
+              <div>{formatCourseDuration(course.estimatedMinutes)}</div>
               <div>{totalLessons} Lessons</div>
               <div>Certificate Included</div>
             </div>
@@ -160,8 +161,8 @@ export default function CourseDetail() {
                     </Link>
                   </Button>) : (<p className="text-sm text-slate-300">Lessons for this course are being prepared.</p>)}
                 {(passed || enrolment.completedAt) && (<div className="mt-4 flex flex-wrap gap-3 text-foreground">
-                    <RetakeCourseButton courseId={courseId}/>
-                    <RetakeAssessmentButton courseId={courseId} disabled={!allLessonsDone}/>
+                    <RetakeCourseButton courseId={courseId} variant="contrast"/>
+                    <RetakeAssessmentButton courseId={courseId} disabled={!allLessonsDone} variant="contrast"/>
                   </div>)}
                 {enrolment.retaking && <p className="mt-3 text-sm text-slate-300">Retaking this course. Your previously earned certificate stays valid. {enrolment.completedAt && <Link href="/certificates" className="underline">View certificate</Link>}</p>}
               </div>) : (<div className="flex flex-col sm:flex-row sm:items-end gap-4">
@@ -185,7 +186,7 @@ export default function CourseDetail() {
       </div>
 
       <div className="container mx-auto px-4 py-16">
-        <AssessmentReview feedback={assessment?.feedback} score={assessment?.latestScore}/>
+        <AssessmentReview key={courseId} feedback={assessment?.feedback} score={assessment?.latestScore} collapsed={courseCompleted || !!enrolment?.completedAt}/>
         {feedback && (<Alert className="mb-10 border-accent/40 bg-accent/5" role="status" data-testid="status-assessment-feedback">
             <AlertCircle className="h-4 w-4"/>
             <AlertTitle>Not passed this time: {feedback.score}% ({feedback.correctCount} of {feedback.total})</AlertTitle>

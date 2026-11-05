@@ -1,3 +1,4 @@
+import { formatCourseDuration } from "../lib/courseDuration.js";
 import { Fragment, useMemo, useState } from "react";
 import { useConfirmation } from "../contexts/ConfirmationContext.jsx";
 import { Link } from "wouter";
@@ -187,7 +188,7 @@ function CourseDetailPanel({ courseId }) {
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {course.code && <Badge variant="outline" className="font-mono">{course.code}</Badge>}
             {course.programme && <span className="text-muted-foreground">{course.programme}</span>}
-            {!course.isPublished && <span className="text-muted-foreground">· Draft, {course.estimatedMinutes} min provisional estimate</span>}
+            {!course.isPublished && <span className="text-muted-foreground">· Draft, {formatCourseDuration(course.estimatedMinutes)} provisional estimate</span>}
           </div>
           <p className="text-sm text-muted-foreground">{course.description}</p>
           {objectives.length > 0 && (<div>

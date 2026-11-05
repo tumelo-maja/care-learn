@@ -157,7 +157,7 @@ export default function Assessment() {
         body = (<div className="bg-card border rounded-2xl p-6 md:p-10 shadow-sm" data-testid="status-assessment-ineligible">
         <h2 className="text-2xl font-serif font-bold mb-2">Finish every lesson first</h2>
         <p className="text-muted-foreground mb-6">The knowledge check opens once all lessons in this course are marked complete.</p>
-        <Button asChild><Link href={`/courses/${courseId}`}>Back to course</Link></Button>
+        <Button asChild variant="destructive" className="bg-red-700 hover:bg-red-800 text-white"><Link href={`/courses/${courseId}`}>Back to course</Link></Button>
       </div>);
     }
     else if (!attemptId || questions.length === 0) {
@@ -219,9 +219,9 @@ export default function Assessment() {
     return (<AppLayout>
       <div className="bg-primary/5 border-b py-8 md:py-10">
         <div className="container mx-auto px-4 max-w-3xl">
-          <Link href={`/courses/${courseId}`} className="text-sm text-muted-foreground hover:text-primary inline-flex items-center mb-3" data-testid="link-back-course">
-            Back to course
-          </Link>
+          <Button asChild variant="destructive" className="mb-3 bg-red-700 hover:bg-red-800 text-white shadow-sm">
+            <Link href={`/courses/${courseId}`} data-testid="link-back-course">Back to course</Link>
+          </Button>
           <h1 className="text-3xl md:text-4xl font-serif font-bold flex items-center gap-3">
             Assessment
           </h1>

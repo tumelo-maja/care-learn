@@ -6,6 +6,7 @@ const buttonVariants = cva("inline-flex items-center justify-center gap-2 whites
     " hover-elevate active-elevate-2", {
     variants: {
         variant: {
+            contrast: "border border-slate-300 bg-white text-slate-950 hover:bg-slate-100 hover:text-slate-950 focus-visible:ring-white focus-visible:ring-offset-slate-800 disabled:opacity-70",
             default: 
             // @replit: no hover, and add primary border
             "bg-primary text-primary-foreground border border-primary-border",

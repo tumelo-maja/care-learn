@@ -6,7 +6,7 @@ import { Button } from "./ui/button.jsx";
 import { useToast } from "../hooks/use-toast.js";
 import { errorMessage, refreshLearning } from "../lib/learning.js";
 import { useConfirmation } from "../contexts/ConfirmationContext.jsx";
-export function RetakeCourseButton({ courseId }) {
+export function RetakeCourseButton({ courseId, variant = "outline" }) {
     const mutation = useRetakeCourse();
     const qc = useQueryClient();
     const [, navigate] = useLocation();
@@ -34,9 +34,9 @@ export function RetakeCourseButton({ courseId }) {
             setBusy(false);
         }
     }
-    return <Button variant="outline" onClick={retake} disabled={busy} data-testid="button-retake-course">{busy ? "Restarting…" : "Retake course"}</Button>;
+    return <Button variant={variant} onClick={retake} disabled={busy} data-testid="button-retake-course">{busy ? "Restarting…" : "Retake course"}</Button>;
 }
-export function RetakeAssessmentButton({ courseId, disabled = false }) {
+export function RetakeAssessmentButton({ courseId, disabled = false, variant = "outline" }) {
     const mutation = useRetakeCourseAssessment();
     const qc = useQueryClient();
     const [, navigate] = useLocation();
@@ -52,5 +52,5 @@ export function RetakeAssessmentButton({ courseId, disabled = false }) {
             toast({ title: "Could not start assessment", description: errorMessage(error), variant: "destructive" });
         }
     }
-    return <Button variant="outline" onClick={retake} disabled={disabled || mutation.isPending} data-testid="button-retake-assessment">{mutation.isPending ? "Preparing questions…" : "Retake assessment"}</Button>;
+    return <Button variant={variant} onClick={retake} disabled={disabled || mutation.isPending} data-testid="button-retake-assessment">{mutation.isPending ? "Preparing questions…" : "Retake assessment"}</Button>;
 }

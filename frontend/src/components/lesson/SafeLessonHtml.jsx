@@ -49,7 +49,7 @@ function renderNode(node, key) {
         if (!src)
             return null;
         return createElement("img", { ...props, src, alt: element.getAttribute("alt") ?? "", loading: "lazy", decoding: "async",
-            referrerPolicy: "no-referrer", className: "max-w-full h-auto rounded-xl" });
+            referrerPolicy: "no-referrer", className: "block max-w-full w-auto h-auto max-h-64 md:max-h-80 object-contain mx-auto my-4 rounded-xl bg-muted" });
     }
     if (["br", "hr"].includes(tag))
         return createElement(tag, props);

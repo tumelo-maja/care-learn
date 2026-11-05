@@ -1,11 +1,12 @@
 import { format } from "date-fns";
 import { buildQrSvg, safeLearnerName } from "./certificateVerification.js";
+import { websiteText } from "./websiteText.js";
 /** Actual CSS pixel size of an A4 sheet at 96dpi. */
 export const CERT_PX_WIDTH = 794;
 export const CERT_PX_HEIGHT = 1123;
 export const ONLINE_CERTIFICATE_HEADING = "Certificate of Online Course Completion";
 export const ONLINE_CERTIFICATE_STATEMENT = "This certifies that the learner has successfully completed the online learning requirements and passed the knowledge assessment for the course named above.";
-export const ONLINE_CERTIFICATE_DISCLAIMER = "This certificate confirms online theoretical learning only. It does not certify practical competence or constitute a regulated professional qualification.";
+export const ONLINE_CERTIFICATE_DISCLAIMER = "This certificate confirms online theoretical learning only.";
 /** A fixed calendar date keeps newly printed awards and public verification in agreement worldwide. */
 export function formatOnlineAwardDate(value) {
     return new Intl.DateTimeFormat("en-GB", {
@@ -20,10 +21,10 @@ export function escapeHtml(value) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
 }
-const HEART_PATHS = '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>';
-/** Inline Care Learn logo mark (HeartPulse in a rounded teal tile). */
+const logoUrl = () => escapeHtml(`${import.meta.env.BASE_URL}logo.png`);
+/** Heart-and-scroll symbol cropped from the same high-resolution logo used by the site. */
 export function logoMarkSvg(size = 40) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#177a73"/><g transform="translate(8 8)" fill="none" stroke="#fbf8f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${HEART_PATHS}</g></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 234 216" overflow="hidden" aria-hidden="true"><image href="${logoUrl()}" width="720" height="216"/></svg>`;
 }
 function medallionSvg() {
     const ticks = Array.from({ length: 48 }, (_, i) => {
@@ -36,8 +37,8 @@ function medallionSvg() {
 <g stroke="#c9a45c" stroke-width="1.2">${ticks}</g>
 <circle cx="80" cy="80" r="56" fill="#16324a"/>
 <circle cx="80" cy="80" r="50" fill="none" stroke="#c9a45c" stroke-width="0.8" stroke-dasharray="2 3"/>
-<g transform="translate(56 50) scale(2)" fill="none" stroke="#fbf8f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${HEART_PATHS}</g>
-<text x="80" y="118" text-anchor="middle" font-family="Georgia, serif" font-size="9" letter-spacing="2.5" fill="#e7d3a6">CARE LEARN</text>
+<circle cx="80" cy="80" r="38" fill="#fbf8f1"/>
+<g transform="translate(48 48)">${logoMarkSvg(64)}</g>
 </svg>`;
 }
 function nameSize(name) {
@@ -65,10 +66,10 @@ function courseSize(title) {
 /** Single source of truth: full HTML document used for both preview and print. */
 export function buildCertificateHtml(data) {
     const online = data.formatVersion === 1;
-    const name = safeLearnerName(data.learnerName);
+    const name = websiteText(safeLearnerName(data.learnerName));
     const qrSvg = buildQrSvg(data.verificationUrl); // throws on failure; caller handles
     const href = escapeHtml(data.verificationUrl);
-    const course = data.courseTitle.trim() || "Care Learn course";
+    const course = websiteText(data.courseTitle.trim() || "Care Learn course");
     let dateText = "";
     try {
         dateText = online ? formatOnlineAwardDate(data.completedAt ?? data.issuedAt)
@@ -97,7 +98,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:#16324a}
 .ribbon:after{content:"";position:absolute;left:0;bottom:-10mm;border-left:10mm solid #177a73;border-right:10mm solid #177a73;border-bottom:10mm solid transparent}
 .ribbon:before{content:"";position:absolute;left:3mm;right:3mm;top:0;bottom:0;border-left:0.3mm solid rgba(251,248,241,.45);border-right:0.3mm solid rgba(251,248,241,.45)}
 .medal{position:absolute;top:58mm;left:50%;transform:translateX(-50%);width:42mm;height:42mm;filter:drop-shadow(0 1mm 1.5mm rgba(22,50,74,.25))}
-.medal svg{width:100%;height:100%}
+.medal > svg{width:100%;height:100%}
 .qr{margin-top:auto;display:flex;flex-direction:column;align-items:center;text-decoration:none;color:#16324a}
 .qr .box{width:34mm;height:34mm;background:#fff;display:block}
 .qr .box svg{width:100%;height:100%;display:block}
@@ -106,8 +107,8 @@ body{font-family:'Inter',system-ui,sans-serif;color:#16324a}
 .side-foot .v{font-family:'Playfair Display',Georgia,serif;font-size:17px;color:#16324a;padding-bottom:3mm;border-bottom:0.3mm solid #9fb3ad}
 .side-foot .l{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#5b7480;margin-top:2.5mm}
 .main{position:relative;flex:1;min-width:0;padding:22mm 16mm 18mm 15mm;display:flex;flex-direction:column}
-.brand{display:flex;align-items:center;gap:3.5mm}
-.brand .wm{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:26px;letter-spacing:-.01em;color:#16324a;line-height:1}
+.brand{display:flex;flex-direction:column;align-items:flex-start;gap:1mm}
+.brand-logo{display:block;width:76mm;max-width:100%;height:auto}
 .brand .tag{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;color:#177a73;margin-top:1.5mm;font-weight:600}
 .kicker{margin-top:30mm;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:#177a73;font-weight:600}
 .title{font-family:'Playfair Display',Georgia,serif;font-weight:500;font-size:44px;line-height:1.02;color:#16324a;margin-top:3mm}
@@ -118,14 +119,12 @@ body{font-family:'Inter',system-ui,sans-serif;color:#16324a}
 .course{font-weight:600;color:#177a73;line-height:1.25;margin-top:4mm;overflow-wrap:anywhere;word-break:break-word}
 .foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:6mm;border-top:0.3mm solid #d8dfd6;padding-top:6mm}
 .foot p{font-size:10px;line-height:1.55;color:#5b7480;max-width:80mm}
-.foot .mark{opacity:.9}
+.foot .mark{opacity:.9;flex-shrink:0;line-height:0}
 .online .kicker{margin-top:18mm}
 .online .title{font-size:34px;line-height:1.08}
 .online .rule{margin:6mm 0}
 .online .name{margin:3mm 0 6mm}
 .online .statement{font-size:12px;line-height:1.65;margin-top:5mm;color:#5b7480}
-.online .award-meta{font-size:11px;line-height:1.6;margin-top:4mm;color:#16324a}
-.online .version{font-size:9px;overflow-wrap:anywhere;color:#5b7480}
 .online .foot{font-size:10px;line-height:1.6}
 </style></head>
 <body><div class="sheet${online ? " online" : ""}"><div class="frame"><div class="inner">
@@ -134,7 +133,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:#16324a}
 <a class="qr" href="${href}" aria-label="Verify this certificate online"><span class="box">${qrSvg}</span><span class="cap">Scan to verify</span></a>
 <div class="side-foot"><div class="v">${escapeHtml(dateText)}</div><div class="l">${online ? "Completion date" : "Date of Award"}</div></div></aside>
 <main class="main">
-<div class="brand">${logoMarkSvg(44)}<div><div class="wm">Care Learn</div><div class="tag">Home-Based Care Learning · Africa</div></div></div>
+<div class="brand"><img class="brand-logo" src="${logoUrl()}" width="720" height="216" alt="Care Learn"/><div class="tag">Home-Based Care Learning · Africa</div></div>
 <div class="kicker">Course achievement</div>
 <h1 class="title">${online ? ONLINE_CERTIFICATE_HEADING : "Certificate<br/>of <em>Completion</em>"}</h1>
 <div class="rule"></div>
@@ -142,8 +141,8 @@ body{font-family:'Inter',system-ui,sans-serif;color:#16324a}
 <div class="name" style="font-size:${nameSize(name)}px">${escapeHtml(name)}</div>
 ${online ? "" : '<div class="lead">has successfully completed the course</div>'}
 <div class="course" style="font-size:${courseSize(course)}px">${escapeHtml(course)}</div>
-${online ? `<p class="statement">${ONLINE_CERTIFICATE_STATEMENT}</p><div class="award-meta">${data.courseVersion ? `<div class="version">Course version: ${escapeHtml(data.courseVersion)}</div>` : ""}</div>` : ""}
-<div class="foot"><p>${online ? ONLINE_CERTIFICATE_DISCLAIMER : "Issued by Care Learn on completion of all lessons and assessments in this course. Keep this certificate with your professional care training records."}</p><div class="mark">${logoMarkSvg(30)}</div></div>
+${online ? `<p class="statement">${ONLINE_CERTIFICATE_STATEMENT}</p>` : ""}
+<div class="foot"><p>${online ? ONLINE_CERTIFICATE_DISCLAIMER : "Issued by Care Learn on completion of all lessons and assessments in this course. Keep this certificate with your professional care training records."}</p><div class="mark">${logoMarkSvg(52)}</div></div>
 </main>
 </div></div></div></body></html>`;
 }

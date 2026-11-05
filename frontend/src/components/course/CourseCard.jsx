@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { formatCourseDuration } from "../../lib/courseDuration.js";
 import { BookOpen } from "lucide-react";
 import { Badge } from "../ui/badge.jsx";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card.jsx";
@@ -32,7 +33,7 @@ export function CourseCard({ course }) {
         
         <CardFooter className="p-5 pt-0 mt-auto flex items-center justify-between text-xs font-medium text-muted-foreground border-t border-border/40 bg-muted/20 pb-4">
           <div className="flex items-center gap-1.5 mt-4">
-            <span>{course.estimatedMinutes} mins</span>
+            <span>{formatCourseDuration(course.estimatedMinutes)}</span>
           </div>
           <div className="flex items-center gap-1.5 mt-4 capitalize">
             <span>{audienceLabel}</span>

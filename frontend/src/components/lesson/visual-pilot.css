@@ -1,0 +1,67 @@
+/* Shared balanced lesson styles. Scoped to .visual-pilot only;
+   preserves the lesson player's panel height and internal scrolling. */
+.visual-pilot :is(.vp-concept-map, .vp-tiles, .vp-balance, .vp-examples) {
+  container: lesson-cards / inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--lesson-card-gap, .75rem);
+}
+.visual-pilot :is(.vp-concept-map, .vp-tiles, .vp-balance, .vp-examples) > * {
+  flex: 0 1 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+/* Use the available lesson width, not the viewport width. An odd final card
+   keeps the same width as its neighbours and is centred on its own row. */
+@container lesson-cards (min-width: 32rem) {
+  .visual-pilot :is(.vp-concept-map, .vp-tiles, .vp-balance, .vp-examples) > * {
+    flex-basis: calc((100% - var(--lesson-card-gap, .75rem)) / 2);
+  }
+}
+.visual-pilot .vp-reading-points { padding-left: 1.25rem; }
+.visual-pilot .vp-reading-points > li { margin: .6rem 0; padding-left: .2rem; }
+.visual-pilot .vp-concept-map { margin: 0; }
+.visual-pilot .vp-concept-map > div { min-width: 0; padding: .9rem; border: 1px solid hsl(var(--border)); border-radius: .8rem; background: hsl(var(--card)); overflow-wrap: anywhere; }
+.visual-pilot .vp-concept-map dt { color: hsl(var(--primary)); font-weight: 700; margin: 0 0 .4rem; }
+.visual-pilot .vp-concept-map dd { margin: 0; }
+.visual-pilot .vp-lead { font-size: 1.08em; line-height: 1.7; }
+.visual-pilot .vp-label { font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--primary)); margin: 0 0 .35rem; }
+.visual-pilot .vp-callout { border-radius: .9rem; padding: .9rem 1.1rem; margin: 1.1rem 0; background: hsl(var(--secondary) / .55); border: 1px solid hsl(var(--border)); }
+.visual-pilot .vp-callout p:last-child { margin-bottom: 0; }
+.visual-pilot .vp-callout-key { border-color: hsl(var(--accent) / .25); background: hsl(var(--accent) / .08); }
+.visual-pilot .vp-objectives, .visual-pilot .vp-steps { list-style: none; padding: 0; counter-reset: vp; }
+.visual-pilot .vp-objectives > li, .visual-pilot .vp-steps > li { counter-increment: vp; position: relative; padding: .55rem .75rem .55rem 2.9rem; margin: .45rem 0; border-radius: .75rem; background: hsl(var(--muted) / .6); }
+.visual-pilot .vp-objectives > li::before, .visual-pilot .vp-steps > li::before { content: counter(vp); position: absolute; left: .7rem; top: .55rem; width: 1.6rem; height: 1.6rem; border-radius: 999px; display: grid; place-items: center; font-weight: 700; font-size: .85rem; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+.visual-pilot .vp-tiles { --lesson-card-gap: .6rem; list-style: none; padding: 0; }
+.visual-pilot .vp-tiles > li { margin: 0; padding: .8rem .9rem; border: 1px solid hsl(var(--border)); border-radius: .8rem; background: hsl(var(--card)); }
+.visual-pilot .vp-tiles strong { display: block; color: hsl(var(--primary)); }
+.visual-pilot .vp-figure { margin: 1.25rem 0; padding: 1rem; border: 1px solid hsl(var(--border)); border-radius: 1rem; background: hsl(var(--muted) / .35); }
+.visual-pilot .vp-figure figcaption { font-size: .85rem; font-weight: 600; margin: 0 0 .75rem; color: hsl(var(--muted-foreground)); }
+.visual-pilot .vp-balance { --lesson-card-gap: .6rem; }
+.visual-pilot .vp-balance > div { border-radius: .8rem; padding: .8rem .9rem; }
+.visual-pilot .vp-balance p, .visual-pilot .vp-balance ul { margin: 0; }
+.visual-pilot .vp-risk { background: hsl(var(--card)); border: 1px dashed hsl(var(--destructive) / .5); }
+.visual-pilot .vp-risk .vp-label { color: hsl(var(--destructive)); }
+.visual-pilot .vp-balance-mid { background: hsl(var(--primary) / .08); border: 2px solid hsl(var(--primary) / .55); }
+.visual-pilot .vp-compare { width: 100%; margin: 0; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+.visual-pilot .vp-compare th, .visual-pilot .vp-compare td { padding: .6rem .75rem; vertical-align: top; border-bottom: 1px solid hsl(var(--border)); }
+.visual-pilot .vp-compare th:first-child, .visual-pilot .vp-compare td:first-child { background: hsl(var(--primary) / .07); }
+.visual-pilot .vp-compare th:last-child, .visual-pilot .vp-compare td:last-child { background: hsl(var(--destructive) / .06); }
+.visual-pilot .vp-warning { border: 2px solid hsl(var(--destructive) / .6); border-radius: .9rem; padding: .9rem 1.1rem; background: hsl(var(--destructive) / .07); }
+.visual-pilot .vp-warning .lesson-panel-label { color: hsl(var(--destructive)); font-weight: 700; }
+.visual-pilot .vp-defs dt { font-weight: 700; color: hsl(var(--primary)); margin-top: .8rem; }
+.visual-pilot .vp-defs dd { margin: .2rem 0 0; }
+.visual-pilot .vp-examples { --lesson-card-gap: .9rem; }
+.visual-pilot .vp-example { border: 1px solid hsl(var(--border)); border-radius: .9rem; padding: .9rem 1rem; background: hsl(var(--card)); }
+.visual-pilot .vp-example p { margin: .35rem 0; }
+.visual-pilot .vp-outcome { border-top: 1px solid hsl(var(--border)); padding-top: .7rem; }
+/* Generic balanced-format safeguards (also safe for the pilot). */
+.visual-pilot .vp-figure, .visual-pilot .vp-tiles > li, .visual-pilot .vp-balance > div, .visual-pilot .vp-example, .visual-pilot .vp-callout, .visual-pilot .vp-warning, .visual-pilot .vp-defs { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.visual-pilot .vp-compare th, .visual-pilot .vp-compare td { overflow-wrap: anywhere; word-break: normal; hyphens: auto; }
+.visual-pilot .vp-balance-side { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); }
+.visual-pilot .vp-figure > ol.vp-steps { margin: 0; }
+.visual-pilot .vp-figure > ol.vp-steps > li { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); }
+.visual-pilot .vp-figure > ol.vp-steps > li:not(:last-child)::after { content: ""; position: absolute; left: 1.45rem; top: 2.2rem; bottom: -.55rem; width: 2px; background: hsl(var(--primary) / .35); }
+@media (max-width: 480px) { .visual-pilot .vp-compare th, .visual-pilot .vp-compare td { padding: .5rem; font-size: .9em; } }

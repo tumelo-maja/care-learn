@@ -3,7 +3,6 @@ import { useParams, Link } from "wouter";
 import { AlertCircle, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileText, Loader2, Menu, PlayCircle, XCircle } from "lucide-react";
 import { useGetAdminCoursePreview, getGetAdminCoursePreviewQueryKey, useStartAdminPreviewAssessment, useSubmitAdminPreviewAssessment, } from "../api/index.js";
 import { LessonContent, LessonVideo } from "../components/lesson/LessonContent.jsx";
-import { isHbc001Prototype } from "../lib/lessonPresentation.js";
 import { QuestionList } from "../components/assessment/QuestionList.jsx";
 import { AssessmentReview } from "../components/AssessmentReview.jsx";
 import { Button } from "../components/ui/button.jsx";
@@ -44,6 +43,7 @@ export default function AdminCoursePreview() {
     const [result, setResult] = useState(null);
     const [lastToken, setLastToken] = useState(undefined);
     const [navOpen, setNavOpen] = useState(false);
+    const [pageState, setPageState] = useState({ lessonId: null, isLast: false });
     // Bumped on every country change; responses from an older context are discarded.
     const contextRef = useRef(0);
     const params = { country };
@@ -94,6 +94,8 @@ export default function AdminCoursePreview() {
     const nextLesson = currentIndex >= 0 ? allLessons[currentIndex + 1] : undefined;
     const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : undefined;
     const percent = allLessons.length ? Math.round((allLessons.filter((l) => viewed.has(l.id)).length / allLessons.length) * 100) : 0;
+    const hasText = !!currentLesson && (currentLesson.contentType !== "video" || !!currentLesson.content);
+    const onLastPage = !hasText || (pageState.lessonId === currentLesson?.id && pageState.isLast);
     const scrollToTop = () => document.getElementById("preview-main")
         ?.closest("[data-radix-scroll-area-viewport]")?.scrollTo({ top: 0 });
     const goLesson = (lessonId) => { setMode({ kind: "lesson", lessonId }); setNavOpen(false); scrollToTop(); };
@@ -207,14 +209,15 @@ export default function AdminCoursePreview() {
         <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full border text-xs font-medium text-muted-foreground mb-4" data-testid="text-preview-country">
           Shared course preview
         </span>
+        {currentLesson.content?.includes("lesson-draft-banner") && <p role="note" className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100" data-testid="text-preview-draft-review">Draft lesson source - professional review required. Review and approval are managed in course administration.</p>}
         <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground leading-tight">{currentLesson.title}</h1>
         <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
           About {currentLesson.durationMinutes} min
         </p>
       </div>
+      <LessonContent key={`${country}-${currentLesson.id}-c`} html={currentLesson.content} lessonTitle={currentLesson.title} courseTitle={course.title} coverImageUrl={course.thumbnailUrl} className="mb-8" interactive onPageChange={({ isLast: last }) => setPageState({ lessonId: currentLesson.id, isLast: last })}/>
       {currentLesson.videoUrl && <LessonVideo key={`${country}-${currentLesson.id}`} url={currentLesson.videoUrl} title={currentLesson.title}/>}
-      {(currentLesson.contentType !== "video" || !!currentLesson.content) && (<LessonContent key={`${country}-${currentLesson.id}-c`} html={currentLesson.content} className="mb-12" interactive={isHbc001Prototype(course.code, currentLesson.title, currentIndex)}/>)}
-      <div className="mt-12 flex flex-col sm:flex-row items-center justify-between p-6 bg-card border border-dashed border-amber-500/60 rounded-2xl shadow-sm gap-4">
+      {onLastPage && <div className="mt-8 flex flex-col sm:flex-row items-center justify-between p-6 bg-card border border-dashed border-amber-500/60 rounded-2xl shadow-sm gap-4">
         <div>
           <h2 className="font-semibold text-lg">{nextLesson ? "Preview: finished this lesson?" : "Preview: last lesson"}</h2>
           <p className="text-sm text-muted-foreground">Marks it viewed in this preview only. No learner progress is recorded.</p>
@@ -222,7 +225,7 @@ export default function AdminCoursePreview() {
         <Button size="lg" className="w-full sm:w-auto px-8 rounded-xl" onClick={markViewed} data-testid="button-preview-complete-lesson">
           {nextLesson ? "Mark viewed and continue" : "Go to assessment preview"}
         </Button>
-      </div>
+      </div>}
     </>);
     let assessmentBody;
     if (attempt && questions.length) {
