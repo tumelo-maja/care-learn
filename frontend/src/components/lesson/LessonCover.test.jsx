@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LessonCover } from "./LessonCover.jsx";
+import { LessonPager } from "./LessonPager.jsx";
 
 test("lesson cover contains the exact title, course image and a section-owned scrollbar", () => {
     const html = renderToStaticMarkup(createElement(LessonCover, {
@@ -24,4 +25,21 @@ test("lesson covers use the local image for missing or unsafe image URLs and esc
         assert.match(html, /&lt;script&gt;unsafe&lt;\/script&gt;/);
         assert.doesNotMatch(html, /<script|src="javascript:|src="data:/);
     }
+});
+
+test("cover reserves space for the complete title and allows the image to shrink", () => {
+    const html = renderToStaticMarkup(createElement(LessonCover, { title: "Supporting Choice and Independence" }));
+    assert.match(html, /flex flex-col/);
+    assert.match(html, /min-h-0 shrink aspect-/);
+    assert.match(html, /class="shrink-0 p-5 md:p-10"/);
+    assert.doesNotMatch(html, /line-clamp|truncate/);
+});
+
+test("opening covers get a taller panel without enlarging normal lesson pages", () => {
+    const pages = [createElement("section", { key: "cover" }, "Cover")];
+    const cover = renderToStaticMarkup(createElement(LessonPager, { pages, hasCover: true }));
+    const normal = renderToStaticMarkup(createElement(LessonPager, { pages }));
+    assert.ok(cover.includes("h-[max(68dvh,30rem)]"));
+    assert.ok(!cover.includes("h-[58dvh]"));
+    assert.ok(normal.includes("h-[58dvh]"));
 });

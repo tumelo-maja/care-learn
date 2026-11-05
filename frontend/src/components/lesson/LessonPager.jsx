@@ -5,7 +5,7 @@ import { cn } from "../../lib/utils.js";
  * Shows one page at a time. Sections scroll inside a fixed-height reading panel;
  * controls sit outside it so they stay reachable. Reports page position upward.
  */
-export function LessonPager({ pages, onPageChange, panelClassName }) {
+export function LessonPager({ pages, onPageChange, panelClassName, hasCover = false }) {
     const [page, setPage] = useState(0);
     const total = Math.max(pages.length, 1);
     const current = Math.min(page, total - 1);
@@ -27,7 +27,7 @@ export function LessonPager({ pages, onPageChange, panelClassName }) {
         panelRef.current?.focus({ preventScroll: true });
     }, [current, total]);
     return (<div ref={rootRef} data-testid="lesson-pager">
-      <div ref={panelRef} tabIndex={-1} role="region" aria-label={`Lesson page ${current + 1} of ${total}`} data-testid="lesson-reading-panel" className={cn("h-[58dvh] overflow-hidden bg-card border rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", panelClassName)}>
+      <div ref={panelRef} tabIndex={-1} role="region" aria-label={`Lesson page ${current + 1} of ${total}`} data-testid="lesson-reading-panel" className={cn(hasCover && current === 0 ? "h-[max(68dvh,30rem)]" : "h-[58dvh]", "overflow-hidden bg-card border rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", panelClassName)}>
         {pages[current]}
       </div>
       {total > 1 && (<nav aria-label="Lesson pages" className="mt-4 flex items-center justify-between gap-3 rounded-2xl border bg-card px-3 py-2 shadow-sm">

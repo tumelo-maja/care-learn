@@ -14,7 +14,7 @@ function PagedHtml({ html, className, emptyText, onPageChange, openingPage }) {
         ? pages.map((page, i) => <section key={i} tabIndex={0} data-lesson-scroll aria-label="Lesson content" className={card}><SafeLessonHtml html={page}/></section>)
         : [<section key="empty" tabIndex={0} data-lesson-scroll aria-label="Lesson content" className={card}><p>{emptyText}</p></section>];
     if (openingPage) views.unshift(openingPage);
-    return <div className={className}><LessonPager pages={views} onPageChange={onPageChange}/></div>;
+    return <div className={className}><LessonPager pages={views} onPageChange={onPageChange} hasCover={!!openingPage}/></div>;
 }
 /** Shared safe, paginated renderer; learner and admin-preview views opt in to interactive practice. */
 export function LessonContent({ html, className, emptyText = "No content provided.", interactive = false, onPageChange, lessonTitle, courseTitle, coverImageUrl }) {

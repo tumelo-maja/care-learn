@@ -126,7 +126,7 @@ function Blocks({ html, onPageChange, openingPage, className }) {
     const views = pages.map((page, i) => <div key={i} className={cn("h-full min-h-0 flex flex-col gap-5 md:gap-6", className)} data-testid="interactive-lesson">{page.map(b => renderBlock(b, state))}</div>);
     if (!views.length) views.push(<section key="empty" tabIndex={0} data-lesson-scroll aria-label="Lesson content" className="h-full overflow-y-auto overscroll-contain p-5"><p>No content provided.</p></section>);
     if (openingPage) views.unshift(openingPage);
-    return <LessonPager pages={views} onPageChange={onPageChange}/>;
+    return <LessonPager pages={views} onPageChange={onPageChange} hasCover={!!openingPage}/>;
 }
 /** Interactive presentation of stored lesson HTML; local state resets whenever html changes. */
 export function InteractiveLesson({ html, onPageChange, openingPage, className }) {
