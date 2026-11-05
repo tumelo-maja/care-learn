@@ -12,7 +12,7 @@ import "./visual-pilot.css";
 const prose = "lesson-content prose prose-slate dark:prose-invert max-w-none";
 function BlockShell({ id, title, children, className }) {
     const headingId = `${id}-heading`;
-    return (<section tabIndex={0} data-lesson-scroll aria-labelledby={title ? headingId : undefined} data-testid={`lesson-block-${id}`} className={cn("min-h-0 flex-1 overflow-y-auto overscroll-x-contain overscroll-y-auto bg-card border rounded-2xl p-5 md:p-8 shadow-sm", className)}>
+    return (<section tabIndex={0} data-lesson-scroll aria-labelledby={title ? headingId : undefined} data-testid={`lesson-block-${id}`} className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain bg-card border rounded-2xl p-5 md:p-8 shadow-sm", className)}>
       {title && (<h2 id={headingId} className="flex items-center gap-2 font-serif text-xl md:text-2xl text-primary mb-6" data-testid={`heading-${id}`}>
           {title}
         </h2>)}
@@ -32,7 +32,7 @@ export function ExpandableExplanation({ id, title, html, defaultOpen = false, op
     const open = openProp ?? localOpen;
     const setOpen = (fn) => { const next = fn(open); setLocalOpen(next); onOpenChange?.(next); };
     const panelId = `${id}-panel`;
-    return (<section tabIndex={0} data-lesson-scroll aria-label={title} className="min-h-0 flex-1 overflow-y-auto overscroll-x-contain overscroll-y-auto bg-card border rounded-2xl shadow-sm" data-testid={`lesson-block-${id}`}>
+    return (<section tabIndex={0} data-lesson-scroll aria-label={title} className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-card border rounded-2xl shadow-sm" data-testid={`lesson-block-${id}`}>
       <h2 className="m-0">
         <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen(o => !o)} data-testid={`button-toggle-${id}`} className="w-full flex items-center gap-2 text-left p-5 md:px-8 font-serif text-lg md:text-xl text-primary rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <span className="flex-1">{title || "More information"}</span>
@@ -63,7 +63,7 @@ export function PracticeQuestionBlock({ title, question, scenario = false, value
     const correct = !!result?.correct;
     const headingId = `${question.id}-heading`;
     const promptId = `${question.id}-prompt`;
-    return (<section tabIndex={0} data-lesson-scroll aria-labelledby={headingId} data-testid={`practice-${question.id}`} className="min-h-0 flex-1 overflow-y-auto overscroll-x-contain overscroll-y-auto bg-card border border-primary/25 rounded-2xl p-5 md:p-8 shadow-sm">
+    return (<section tabIndex={0} data-lesson-scroll aria-labelledby={headingId} data-testid={`practice-${question.id}`} className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-card border border-primary/25 rounded-2xl p-5 md:p-8 shadow-sm">
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <span className="text-xs font-semibold uppercase tracking-wider text-primary">{scenario ? "Scenario practice" : "Knowledge check"}</span>
         <span className="text-xs rounded-full bg-muted text-muted-foreground px-2 py-0.5" data-testid={`text-practice-note-${question.id}`}>
@@ -124,7 +124,7 @@ function Blocks({ html, onPageChange, openingPage, className }) {
     const state = { answers, setAnswers, open, setOpen };
     // Constrain sections to the view so their own overflow scrolls, not the pager.
     const views = pages.map((page, i) => <div key={i} className={cn("h-full min-h-0 flex flex-col gap-5 md:gap-6", className)} data-testid="interactive-lesson">{page.map(b => renderBlock(b, state))}</div>);
-    if (!views.length) views.push(<section key="empty" tabIndex={0} data-lesson-scroll aria-label="Lesson content" className="h-full overflow-y-auto overscroll-x-contain overscroll-y-auto p-5"><p>No content provided.</p></section>);
+    if (!views.length) views.push(<section key="empty" tabIndex={0} data-lesson-scroll aria-label="Lesson content" className="h-full overflow-y-auto overscroll-contain p-5"><p>No content provided.</p></section>);
     if (openingPage) views.unshift(openingPage);
     return <LessonPager pages={views} onPageChange={onPageChange} hasCover={!!openingPage}/>;
 }

@@ -3,6 +3,7 @@ import { useParams, Link } from "wouter";
 import { AlertCircle, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileText, Loader2, Menu, PlayCircle, XCircle } from "lucide-react";
 import { useGetAdminCoursePreview, getGetAdminCoursePreviewQueryKey, useStartAdminPreviewAssessment, useSubmitAdminPreviewAssessment, } from "../api/index.js";
 import { LessonContent, LessonVideo } from "../components/lesson/LessonContent.jsx";
+import { LessonHeaderTitle, LessonPosition } from "../components/lesson/LessonPosition.jsx";
 import { QuestionList } from "../components/assessment/QuestionList.jsx";
 import { AssessmentReview } from "../components/AssessmentReview.jsx";
 import { Button } from "../components/ui/button.jsx";
@@ -202,9 +203,8 @@ export default function AdminCoursePreview() {
       <Button asChild><Link href="/admin">Back to admin</Link></Button>
     </div>) : (<>
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4 uppercase tracking-wider">
-          {currentLesson.contentType} Lesson
-          <span className="normal-case tracking-normal font-medium">· {currentIndex + 1} of {allLessons.length}</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4" data-testid="text-lesson-position">
+          <LessonPosition index={currentIndex} total={allLessons.length}/>
         </div>
         <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full border text-xs font-medium text-muted-foreground mb-4" data-testid="text-preview-country">
           Shared course preview
@@ -311,9 +311,9 @@ export default function AdminCoursePreview() {
                     {sidebar}
                   </SheetContent>
                 </Sheet>
-                <p className="font-semibold text-base md:text-lg line-clamp-1">
-                  <span className="text-amber-700 dark:text-amber-300 text-xs font-bold tracking-widest mr-2">ADMIN PREVIEW</span>
-                  {mode.kind === "assessment" ? "Final assessment" : currentLesson?.title}
+                <p className="min-w-0 font-semibold text-sm md:text-lg line-clamp-1">
+                  <span className="hidden md:inline text-amber-700 dark:text-amber-300 text-xs font-bold tracking-widest mr-2">ADMIN PREVIEW</span>
+                  {mode.kind === "assessment" ? "Final assessment" : <LessonHeaderTitle title={currentLesson?.title} index={currentIndex} total={allLessons.length}/>}
                 </p>
               </div>
               {mode.kind === "lesson" && (<div className="flex gap-2 shrink-0">

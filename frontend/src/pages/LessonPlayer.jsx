@@ -3,6 +3,7 @@ import { useParams, Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Menu, PlayCircle } from "lucide-react";
 import { LessonContent, LessonVideo } from "../components/lesson/LessonContent.jsx";
+import { LessonHeaderTitle, LessonPosition } from "../components/lesson/LessonPosition.jsx";
 import { useGetCourse, useMarkLessonComplete, useGetMyEnrolments, getGetCourseQueryKey, getGetMyEnrolmentsQueryKey, } from "../api/index.js";
 import { Button } from "../components/ui/button.jsx";
 import { ScrollArea } from "../components/ui/scroll-area.jsx";
@@ -161,7 +162,9 @@ export default function LessonPlayer() {
                   <SidebarContent />
                 </SheetContent>
               </Sheet>
-              <p className="font-semibold text-lg line-clamp-1">{currentLesson?.title}</p>
+              <p className="min-w-0 font-semibold text-sm md:text-lg line-clamp-1">
+                <LessonHeaderTitle title={currentLesson?.title} index={currentIndex} total={allLessons.length}/>
+              </p>
             </div>
             <div className="flex gap-2 shrink-0">
               <Button variant="outline" size="sm" disabled={!prevLesson} aria-label="Previous lesson" data-testid="button-prev-lesson" onClick={() => prevLesson && setLocation(`/courses/${courseId}/lessons/${prevLesson.id}`)}>
@@ -180,9 +183,8 @@ export default function LessonPlayer() {
         <ScrollArea className="flex-1 bg-muted/20">
           <div className="max-w-4xl mx-auto px-4 pt-5 pb-3 md:py-12">
             <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4 uppercase tracking-wider">
-                {currentLesson?.contentType} Lesson
-                {currentLesson && <span className="normal-case tracking-normal font-medium">· {currentIndex + 1} of {allLessons.length}</span>}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4" data-testid="text-lesson-position">
+                <LessonPosition index={currentIndex} total={allLessons.length}/>
               </div>
               <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground leading-tight">{currentLesson?.title}</h1>
               {isCurrentDone && (<p className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary" data-testid="status-lesson-complete">
