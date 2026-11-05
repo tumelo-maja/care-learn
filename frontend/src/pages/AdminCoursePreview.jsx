@@ -215,7 +215,7 @@ export default function AdminCoursePreview() {
           About {currentLesson.durationMinutes} min
         </p>
       </div>
-      <LessonContent key={`${country}-${currentLesson.id}-c`} html={currentLesson.content} lessonTitle={currentLesson.title} courseTitle={course.title} coverImageUrl={course.thumbnailUrl} className="mb-8" interactive onPageChange={({ isLast: last }) => setPageState({ lessonId: currentLesson.id, isLast: last })}/>
+      <LessonContent key={`${country}-${currentLesson.id}-c`} html={currentLesson.content} lessonTitle={currentLesson.title} courseTitle={course.title} coverImageUrl={course.thumbnailUrl} className="mb-3 md:mb-8" interactive onPageChange={({ isLast: last }) => setPageState({ lessonId: currentLesson.id, isLast: last })}/>
       {currentLesson.videoUrl && <LessonVideo key={`${country}-${currentLesson.id}`} url={currentLesson.videoUrl} title={currentLesson.title}/>}
       {onLastPage && <div className="mt-8 flex flex-col sm:flex-row items-center justify-between p-6 bg-card border border-dashed border-amber-500/60 rounded-2xl shadow-sm gap-4">
         <div>
@@ -327,7 +327,7 @@ export default function AdminCoursePreview() {
             </div>
           </header>
           <ScrollArea className="flex-1 bg-muted/20">
-            <div id="preview-main" className="max-w-4xl mx-auto px-4 py-8 md:py-12">
+            <div id="preview-main" className="max-w-4xl mx-auto px-4 pt-5 pb-3 md:py-12">
               {mode.kind === "lesson" ? lessonBody : (<>
                   <div className="mb-8">
                     <h1 className="text-3xl md:text-4xl font-serif font-bold flex items-center gap-3">

@@ -106,7 +106,7 @@ export default function LessonPlayer() {
         </div>);
         }
         return (<>
-        <LessonContent key={currentLesson.id} html={currentLesson.content} lessonTitle={currentLesson.title} courseTitle={course.title} coverImageUrl={course.thumbnailUrl} className="mb-8" interactive onPageChange={({ isLast: last }) => setPageState({ lessonId: currentLesson.id, isLast: last })}/>
+        <LessonContent key={currentLesson.id} html={currentLesson.content} lessonTitle={currentLesson.title} courseTitle={course.title} coverImageUrl={course.thumbnailUrl} className="mb-3 md:mb-8" interactive onPageChange={({ isLast: last }) => setPageState({ lessonId: currentLesson.id, isLast: last })}/>
         {currentLesson.videoUrl && <LessonVideo key={currentLesson.id} url={currentLesson.videoUrl} title={currentLesson.title}/>}
       </>);
     };
@@ -178,7 +178,7 @@ export default function LessonPlayer() {
         </header>
 
         <ScrollArea className="flex-1 bg-muted/20">
-          <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
+          <div className="max-w-4xl mx-auto px-4 pt-5 pb-3 md:py-12">
             <div className="mb-8">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4 uppercase tracking-wider">
                 {currentLesson?.contentType} Lesson

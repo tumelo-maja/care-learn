@@ -345,6 +345,26 @@
   }
 }
 
+/* Compact phone views: short content uses its natural height, while long
+   reading sections retain their internal scrollbar and vertical chaining. */
+@media (max-width: 767px) {
+  .lesson-reading-panel {
+    height: auto;
+    max-height: 58dvh;
+  }
+  .lesson-reading-panel > :is(div, [data-lesson-scroll]) {
+    height: auto;
+    max-height: calc(58dvh - 2px);
+  }
+  .lesson-cover-panel,
+  .lesson-cover-panel > [data-lesson-scroll] {
+    max-height: none;
+  }
+  .lesson-cover-image {
+    max-height: none;
+  }
+}
+
 /* CL-004 standard lesson structure (scoped) */
 .lesson-content { overflow-wrap: anywhere; }
 .lesson-content section + section { margin-top: 2rem; }

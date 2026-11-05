@@ -44,3 +44,18 @@ test("opening covers get a taller panel without enlarging normal lesson pages", 
     assert.ok(!cover.includes("h-[58dvh]"));
     assert.ok(normal.includes("h-[58dvh]"));
 });
+
+test("pagination has accessible mobile arrows, generous touch targets and an unbroken counter", () => {
+    const pages = Array.from({ length: 17 }, (_, i) => createElement("section", { key: i }, "Teaching"));
+    const html = renderToStaticMarkup(createElement(LessonPager, { pages }));
+    for (const [id, label] of [["prev", "Previous page"], ["next", "Next page"]]) {
+        const button = html.match(new RegExp(`<button\\b[^>]*data-testid="button-${id}-page"[^>]*>`))?.[0];
+        assert.ok(button);
+        assert.ok(button.includes(`aria-label="${label}"`));
+        assert.ok(button.includes("h-11 w-11"));
+        assert.ok(html.includes(`<span class="hidden md:inline">${label}</span>`));
+    }
+    assert.equal((html.match(/class="[^"]*\bh-5 w-5 md:hidden"/g) ?? []).length, 2);
+    assert.match(html, /whitespace-nowrap text-center/);
+    assert.match(html, /Page 1 of 17/);
+});
