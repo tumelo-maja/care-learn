@@ -7,7 +7,7 @@ import { InteractiveLesson } from "./InteractiveLesson.jsx";
 import { LessonPager } from "./LessonPager.jsx";
 import { SafeLessonHtml } from "./SafeLessonHtml.jsx";
 import { LessonCover } from "./LessonCover.jsx";
-const card = "h-full min-h-0 overflow-y-auto overscroll-contain lesson-content prose prose-slate md:prose-lg dark:prose-invert max-w-none bg-card p-5 md:p-10 rounded-2xl border shadow-sm";
+const card = "h-full min-h-0 overflow-y-auto overscroll-x-contain overscroll-y-auto lesson-content prose prose-slate md:prose-lg dark:prose-invert max-w-none bg-card p-5 md:p-10 rounded-2xl border shadow-sm";
 function PagedHtml({ html, className, emptyText, onPageChange, openingPage }) {
     const pages = useMemo(() => paginateHtml(html), [html]);
     const views = pages.length

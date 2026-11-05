@@ -14,7 +14,8 @@ test("practice question initially renders labelled radios without grades or feed
     assert.equal((html.match(/role="radio"/g) ?? []).length, 3);
     assert.match(html, /aria-labelledby="practice-test-prompt"/);
     assert.match(html, /Practice only\. Not graded or saved\./);
-    assert.match(html, /<section[^>]*tabindex="0"[^>]*data-lesson-scroll="true"[^>]*class="[^"]*min-h-0 flex-1 overflow-y-auto overscroll-contain/);
+    assert.match(html, /<section[^>]*tabindex="0"[^>]*data-lesson-scroll="true"[^>]*class="[^"]*min-h-0 flex-1 overflow-y-auto overscroll-x-contain overscroll-y-auto/);
+    assert.doesNotMatch(html, /\boverscroll-contain\b|\boverscroll-y-contain\b|\btouch-none\b/);
     assert.doesNotMatch(html, /data-testid="practice-feedback-/);
     assert.doesNotMatch(html, /<form|type="submit"|data-state="checked"/);
 });

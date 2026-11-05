@@ -12,7 +12,8 @@ test("lesson cover contains the exact title, course image and a section-owned sc
         imageUrl: "https://example.com/care.jpg",
     }));
     assert.match(html, /<section[^>]*data-lesson-scroll="true"/);
-    assert.match(html, /h-full min-h-0 overflow-y-auto overscroll-contain/);
+    assert.match(html, /h-full min-h-0 overflow-y-auto overscroll-x-contain overscroll-y-auto/);
+    assert.doesNotMatch(html, /\boverscroll-contain\b|\boverscroll-y-contain\b|\btouch-none\b/);
     assert.match(html, /<h1[^>]*>Understanding Your Role<\/h1>/);
     assert.match(html, /src="https:\/\/example.com\/care.jpg"/);
     assert.match(html, /Foundation in Home-Based Care/);
